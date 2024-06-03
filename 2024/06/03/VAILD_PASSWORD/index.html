@@ -19,23 +19,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"بحث...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta property="og:type" content="website">
-<meta property="og:title" content="摸鱼博客">
-<meta property="og:url" content="http://example.com/index.html">
+    <meta name="description" content="蓝桥杯第十五届决赛 A【问题描述】小蓝正在开发自己的 OJ 网站。他要求网站用户的密码必须符合以下条件：  长度大于等于 8 个字符，小于等于 16 个字符。  必须包含至少 1 个数字字符和至少 1 个符号字符。例如 lanqiao2024! 、+-*&#x2F;0601、8((&gt;w&lt;))8 都是合法的密码。而 12345678 、####、abc0!#、lanqiao2024060">
+<meta property="og:type" content="article">
+<meta property="og:title" content="蓝桥杯第十五届决赛 A 合法密码">
+<meta property="og:url" content="http://example.com/2024/06/03/VAILD_PASSWORD/index.html">
 <meta property="og:site_name" content="摸鱼博客">
+<meta property="og:description" content="蓝桥杯第十五届决赛 A【问题描述】小蓝正在开发自己的 OJ 网站。他要求网站用户的密码必须符合以下条件：  长度大于等于 8 个字符，小于等于 16 个字符。  必须包含至少 1 个数字字符和至少 1 个符号字符。例如 lanqiao2024! 、+-*&#x2F;0601、8((&gt;w&lt;))8 都是合法的密码。而 12345678 、####、abc0!#、lanqiao2024060">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-06-03T15:59:00.000Z">
+<meta property="article:modified_time" content="2024-06-03T04:37:48.502Z">
 <meta property="article:author" content="snowflak3">
+<meta property="article:tag" content="蓝桥杯">
+<meta property="article:tag" content="算法题">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2024/06/03/VAILD_PASSWORD/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-cn","comments":"","permalink":"","path":"index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-cn","comments":true,"permalink":"http://example.com/2024/06/03/VAILD_PASSWORD/","path":"2024/06/03/VAILD_PASSWORD/","title":"蓝桥杯第十五届决赛 A 合法密码"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>摸鱼博客</title>
+<title>蓝桥杯第十五届决赛 A 合法密码 | 摸鱼博客</title>
   
 
 
@@ -65,7 +71,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">摸鱼博客</h1>
+      <p class="site-title">摸鱼博客</p>
       <i class="logo-line"></i>
     </a>
   </div>
@@ -87,7 +93,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           المحتويات
@@ -100,6 +106,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%93%9D%E6%A1%A5%E6%9D%AF%E7%AC%AC%E5%8D%81%E4%BA%94%E5%B1%8A%E5%86%B3%E8%B5%9B-A"><span class="nav-number">1.</span> <span class="nav-text">蓝桥杯第十五届决赛 A</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0%E3%80%91"><span class="nav-number">1.1.</span> <span class="nav-text">【问题描述】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E8%A7%A3"><span class="nav-number">1.2.</span> <span class="nav-text">题解</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -133,16 +140,17 @@
 
     </div>
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
 
-    
+
+  
 
 
 <div class="post-block">
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/06/03/VAILD_PASSWORD/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -156,13 +164,13 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 摸鱼博客">
+      <meta itemprop="name" content="蓝桥杯第十五届决赛 A 合法密码 | 摸鱼博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/06/03/VAILD_PASSWORD/" class="post-title-link" itemprop="url">蓝桥杯第十五届决赛 A 合法密码</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          蓝桥杯第十五届决赛 A 合法密码
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -185,8 +193,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="蓝桥杯第十五届决赛-A"><a href="#蓝桥杯第十五届决赛-A" class="headerlink" title="蓝桥杯第十五届决赛 A"></a>蓝桥杯第十五届决赛 A</h1><h2 id="【问题描述】"><a href="#【问题描述】" class="headerlink" title="【问题描述】"></a>【问题描述】</h2><p>小蓝正在开发自己的 OJ 网站。他要求网站用户的密码必须符合以下条件：</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="蓝桥杯第十五届决赛-A"><a href="#蓝桥杯第十五届决赛-A" class="headerlink" title="蓝桥杯第十五届决赛 A"></a>蓝桥杯第十五届决赛 A</h1><h2 id="【问题描述】"><a href="#【问题描述】" class="headerlink" title="【问题描述】"></a>【问题描述】</h2><p>小蓝正在开发自己的 OJ 网站。他要求网站用户的密码必须符合以下条件：</p>
 <ol>
 <li><p>长度大于等于 8 个字符，小于等于 16 个字符。</p>
 </li>
@@ -197,7 +204,6 @@
 <p>答案： 400</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">test</span> <span class="operator">=</span> <span class="string">&quot;kfdhtshmrw4nxg#f44ehlbn33ccto#mwfn2waebry#3qd1ubwyhcyuavuajb#vyecsycuzsmwp31ipzah#catatja3kaqbcss2th&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">cnt</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> <span class="number">16</span>;</span><br><span class="line">        <span class="keyword">while</span> (n &gt;= <span class="number">8</span>) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">                    <span class="type">String</span> <span class="variable">out</span> <span class="operator">=</span> test.substring(index, n + index);</span><br><span class="line">                    <span class="keyword">if</span> (check(out)) &#123;</span><br><span class="line">                        cnt++;</span><br><span class="line">                        System.out.println(out + <span class="string">&quot; &quot;</span> + out.length());</span><br><span class="line">                    &#125;</span><br><span class="line">                    index++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="comment">// 懒得管这个越界</span></span><br><span class="line">            &#125;</span><br><span class="line">            n--;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(cnt);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">check</span><span class="params">(String str)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">other</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; str.length(); i++) &#123;</span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> str.charAt(i);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (c &gt;= <span class="string">&#x27;0&#x27;</span> &amp;&amp; c &lt;= <span class="string">&#x27;9&#x27;</span>) &#123;</span><br><span class="line">                num++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (c == <span class="string">&#x27;#&#x27;</span>) other++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> num &gt;= <span class="number">1</span> &amp;&amp; other &gt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-      
     </div>
 
     
@@ -205,11 +211,17 @@
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+          <div class="post-tags">
+              <a href="/tags/%E8%93%9D%E6%A1%A5%E6%9D%AF/" rel="tag"># 蓝桥杯</a>
+              <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="tag"># 算法题</a>
+          </div>
+
+        
+
     </footer>
   </article>
 </div>
+
 
 
 
