@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"show_result":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="SecurityManager曾经的我在某一次阅读Java代码的时候，发现了这一个神奇的东西。让我有了很多圈米的Idea，本文介绍我是如何使用SecurityManager。因为最近学习高版本Java时发现他要被删除了(555)，想着用这个文章纪念纪念它。 我出生了!自Java 1.0问世以来，SecurityManager便成为了Java生态系统的一部分。在那个 以Applet为主导的时代，Ap">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SecurityManager魔法">
+<meta property="og:url" content="http://example.com/2024/06/04/SECURITYMANAGER/index.html">
+<meta property="og:site_name" content="❄笔记">
+<meta property="og:description" content="SecurityManager曾经的我在某一次阅读Java代码的时候，发现了这一个神奇的东西。让我有了很多圈米的Idea，本文介绍我是如何使用SecurityManager。因为最近学习高版本Java时发现他要被删除了(555)，想着用这个文章纪念纪念它。 我出生了!自Java 1.0问世以来，SecurityManager便成为了Java生态系统的一部分。在那个 以Applet为主导的时代，Ap">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-06-04T11:38:20.000Z">
+<meta property="article:modified_time" content="2024-06-04T13:34:03.963Z">
+<meta property="article:author" content="snowflak3">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Java魔法">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/06/04/SECURITYMANAGER/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/06/04/SECURITYMANAGER/","path":"2024/06/04/SECURITYMANAGER/","title":"SecurityManager魔法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SecurityManager魔法 | ❄笔记</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>.admonition{font-size:20px!important;margin:1.5625em 0;padding:.6rem;overflow:hidden;font-size:.64rem;page-break-inside:avoid;border-left:.3rem solid #42b983;border-radius:.3rem;box-shadow:0 .1rem .4rem rgba(0,0,0,.05),0 0 .05rem rgba(0,0,0,.1);line-height:initial}p.admonition-title{position:relative;margin:-.6rem -.6rem .8em -.6rem!important;padding:.4rem .6rem .4rem 2.5rem;font-weight:700;line-height:2}.admonition-title::before{position:absolute;top:.9rem;left:1rem;width:12px;height:12px;background-color:#42b983;border-radius:50%;content:' '}.admonition.example{border-color:#7c4dff}.admonition.quote{border-color:#aaa}.admonition.info,.admonition.todo{border-color:#00b8d4}.admonition.attention,.admonition.caution,.admonition.warning{border-color:#ff9100}.admonition.error,.admonition.fail,.admonition.failure,.admonition.missing{border-color:#ff5252}.example>.admonition-title::before{background-color:#7c4dff;border-radius:50%}.quote>.admonition-title::before{background-color:#aaa;border-radius:50%}.info>.admonition-title::before,.todo>.admonition-title::before{background-color:#00b8d4;border-radius:50%}.attention>.admonition-title::before,.caution>.admonition-title::before,.warning>.admonition-title::before{background-color:#ff9100;border-radius:50%}.error>.admonition-title::before,.fail>.admonition-title::before,.failure>.admonition-title::before,.missing>.admonition-title::before{background-color:#ff5252;border-radius:50%}.admonition>:last-child{margin-bottom:0!important}@media (prefers-color-scheme:light){.admonition{background-color:#eee}p.admonition-title{background-color:rgba(66,185,131,.4)}.example>.admonition-title{background-color:rgba(124,77,255,.4)}.quote>.admonition-title{background-color:rgba(170,170,170,.4)}.info>.admonition-title,.todo>.admonition-title{background-color:rgba(0,184,212,.4)}.attention>.admonition-title,.caution>.admonition-title,.warning>.admonition-title{background-color:rgba(255,145,0,.4)}.error>.admonition-title,.fail>.admonition-title,.failure>.admonition-title,.missing>.admonition-title{background-color:rgba(255,82,82,.4)}}@media (prefers-color-scheme:dark){.admonition{background-color:#424242}p.admonition-title{background-color:rgba(66,185,131,.2)}.example>.admonition-title{background-color:rgba(124,77,255,.2)}.quote>.admonition-title{background-color:rgba(170,170,170,.2)}.info>.admonition-title,.todo>.admonition-title{background-color:rgba(0,184,212,.2)}.attention>.admonition-title,.caution>.admonition-title,.warning>.admonition-title{background-color:rgba(255,145,0,.2)}.error>.admonition-title,.fail>.admonition-title,.failure>.admonition-title,.missing>.admonition-title{background-color:rgba(255,82,82,.2)}}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">❄笔记</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">摸鱼</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SecurityManager"><span class="nav-number">1.</span> <span class="nav-text">SecurityManager</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E5%87%BA%E7%94%9F%E4%BA%86"><span class="nav-number">1.1.</span> <span class="nav-text">我出生了!</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E6%AD%A3%E5%B8%B8%E7%94%A8%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">非正常用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#checkConnect"><span class="nav-number">1.2.1.</span> <span class="nav-text">checkConnect</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#checkLink"><span class="nav-number">1.2.2.</span> <span class="nav-text">checkLink</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#checkPermission"><span class="nav-number">1.2.3.</span> <span class="nav-text">checkPermission</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%95%E8%BF%87%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">绕过方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">snowflak3</p>
+  <div class="site-description" itemprop="description">无用笔记，纯纯记录我的废物经历lol</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/snowf14k3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;snowf14k3" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/06/04/SECURITYMANAGER/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snowflak3">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="❄笔记">
+      <meta itemprop="description" content="无用笔记，纯纯记录我的废物经历lol">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SecurityManager魔法 | ❄笔记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SecurityManager魔法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-06-04 19:38:20 / 修改时间：21:34:03" itemprop="dateCreated datePublished" datetime="2024-06-04T19:38:20+08:00">2024-06-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="SecurityManager"><a href="#SecurityManager" class="headerlink" title="SecurityManager"></a>SecurityManager</h1><p>曾经的我在某一次阅读Java代码的时候，发现了这一个神奇的东西。<br>让我有了很多圈米的Idea，本文介绍我是如何使用SecurityManager。<br>因为最近学习高版本Java时发现他要被删除了(555)，想着用这个文章纪念纪念它。</p>
+<h2 id="我出生了"><a href="#我出生了" class="headerlink" title="我出生了!"></a>我出生了!</h2><p>自Java 1.0问世以来，<code>SecurityManager</code>便成为了Java生态系统的一部分。在那个</p>
+<p>以Applet为主导的时代，<code>Applet</code>的运行依赖于Web浏览器。用户在浏览含有<code>Applet</code>的网页时，<br>浏览器会负责下载<code>Applet</code>的字节码，并在用户计算机上运行。通过设置<code>SecurityManager</code>，可以防止<code>Applet</code>访问本地文件系统或网络等敏感资源。</p>
+<p>截止今日，你依旧能在各种 第三方库&#x2F;JDK 源码中看到<code>SecurityManager</code>的身影。<br>不巧的是<code>SecurityManager</code>在JDK17已经被标识弃用。当你使用它的时候会警告用户<br>未来版本将删除 <code>SecurityManager</code>。</p>
+<p>为了方便，本文章使用JDK1.8进行，且只介绍非正常用法</p>
+<h2 id="非正常用法"><a href="#非正常用法" class="headerlink" title="非正常用法"></a>非正常用法</h2><p>这边只介绍 <code>System.setSecurityManager</code> 的用法，不对 <code>-Djava.security.policy=/path/to/policy</code> 进行讲解</p>
+<blockquote>
+<p><code>System</code> 中的 <code>getProperty</code> 函数</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">getProperty</span><span class="params">(String key, String def)</span> &#123;</span><br><span class="line">    checkKey(key);</span><br><span class="line">    <span class="type">SecurityManager</span> <span class="variable">sm</span> <span class="operator">=</span> getSecurityManager();</span><br><span class="line">    <span class="keyword">if</span> (sm != <span class="literal">null</span>) &#123;</span><br><span class="line">        sm.checkPropertyAccess(key); <span class="comment">// 调用这个函数</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> props.getProperty(key, def);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>于是我突发奇想，<code>checkPropertyAccess</code> 是不是可以看作为一个钩子<code>hook</code>,可以通过<code>checkPropertyAccess</code>获得key，再通过 <code>setProperty</code>进行覆盖其 <code>value</code> ？</p>
+<p>同理可以得到以下的使用方法</p>
+<h3 id="checkConnect"><a href="#checkConnect" class="headerlink" title="checkConnect"></a>checkConnect</h3><ul>
+<li>通过 <code>Unsafe</code> 修改String(不可变,但是Unsafe可以)的内容，达到对某些通信进行监听，建立中转。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 通过反射获取</span></span><br><span class="line">        <span class="type">Field</span> <span class="variable">f</span> <span class="operator">=</span> Unsafe.class.getDeclaredField(<span class="string">&quot;theUnsafe&quot;</span>);</span><br><span class="line">        <span class="comment">// private 2 public </span></span><br><span class="line">        f.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="comment">// static </span></span><br><span class="line">        unsafe = (Unsafe) f.get(<span class="literal">null</span>);</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改String 的 数值</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">modify</span><span class="params">(String src, String to)</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">Field</span> <span class="variable">value</span> <span class="operator">=</span> setAccessible(String.class.getDeclaredField(<span class="string">&quot;value&quot;</span>));</span><br><span class="line">        set(src, value, value.get(to));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// unsafe</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">set</span><span class="params">(Object obj, Field field, Object value)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    unsafe.putObject(obj, unsafe.objectFieldOffset(field), value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T <span class="keyword">extends</span> <span class="title class_">AccessibleObject</span>&gt; T <span class="title function_">setAccessible</span><span class="params">(T t)</span> &#123;</span><br><span class="line">    t.setAccessible(<span class="literal">true</span>);</span><br><span class="line">    <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>具体代码</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> sun.misc.<span class="type">Unsafe</span> <span class="variable">unsafe</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">    <span class="type">ServerSocket</span> <span class="variable">ss</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerSocket</span>(<span class="number">1145</span>);</span><br><span class="line"></span><br><span class="line">    System.setSecurityManager(<span class="keyword">new</span> <span class="title class_">SecurityManager</span>() &#123;</span><br><span class="line">        <span class="comment">// 必须重写</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">checkPermission</span><span class="params">(Permission perm)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">checkConnect</span><span class="params">(String host, <span class="type">int</span> port)</span> &#123;</span><br><span class="line">            modify(host,<span class="string">&quot;172.17.209.50&quot;</span>); <span class="comment">// 修改内容</span></span><br><span class="line">            System.out.println(<span class="string">&quot;尝试连接 &quot;</span>+host + <span class="string">&quot; &quot;</span> + port);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">checkConnect</span><span class="params">(String host, <span class="type">int</span> port, Object context)</span> &#123;</span><br><span class="line">            checkConnect(host,port);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Socket</span>(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">1145</span>);</span><br><span class="line"></span><br><span class="line">    socket.close();</span><br><span class="line">    System.out.println(<span class="string">&quot;end&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="checkLink"><a href="#checkLink" class="headerlink" title="checkLink"></a>checkLink</h3><p>众所周知，Java想要加载使用其他语言编写的的必须使用 <code>System.load</code> or  <code>System.loadLibaray</code>两个函数之一，通过查看他们的代码可知，同样会经过 <code>SecurityManager</code> 的审查，同理我们可以对传入的filename进行修改，即可达到 redirect load lib，再经此伪造同样的修改后的 <code>dll</code> 或者 <code>so</code> 文件。</p>
+<ul>
+<li>加载 <code>dll</code> 或者 <code>so</code> 的函数</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">load0</span><span class="params">(Class&lt;?&gt; fromClass, String filename)</span> &#123;</span><br><span class="line">    <span class="type">SecurityManager</span> <span class="variable">security</span> <span class="operator">=</span> System.getSecurityManager();</span><br><span class="line">    <span class="keyword">if</span> (security != <span class="literal">null</span>) &#123;</span><br><span class="line">        security.checkLink(filename);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!(<span class="keyword">new</span> <span class="title class_">File</span>(filename).isAbsolute())) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsatisfiedLinkError</span>(</span><br><span class="line">            <span class="string">&quot;Expecting an absolute path of the library: &quot;</span> + filename);</span><br><span class="line">    &#125;</span><br><span class="line">    ClassLoader.loadLibrary(fromClass, filename, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>实例代码</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line"></span><br><span class="line">    System.setSecurityManager(<span class="keyword">new</span> <span class="title class_">SecurityManager</span>() &#123;</span><br><span class="line">        <span class="comment">// 必须重写</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">checkPermission</span><span class="params">(Permission perm)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">checkLink</span><span class="params">(String lib)</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (check(lib)) <span class="comment">// 写你对加载的库进行判断</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 修改路径</span></span><br><span class="line">                modify(lib,<span class="string">&quot;redirect_libPath&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in).next();</span><br><span class="line">    System.out.println(<span class="string">&quot;end&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="checkPermission"><a href="#checkPermission" class="headerlink" title="checkPermission"></a>checkPermission</h3><p>这个函数就已经包括了第三方库中的自定义 <code>checkPermission</code> 行为。</p>
+<p>可以按照特定的情况来使用。</p>
+<p>这边我们使用 setSecurityManager 来实例，实现禁止修改 安全管理器</p>
+<ul>
+<li>代码</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">    System.setSecurityManager(<span class="keyword">new</span> <span class="title class_">SecurityManager</span>() &#123;</span><br><span class="line">        <span class="comment">// 必须重写</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">checkPermission</span><span class="params">(Permission perm)</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (perm.getName().equals(<span class="string">&quot;setSecurityManager&quot;</span>)) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;禁止修改 SecurityManager &quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    System.out.println(<span class="string">&quot;设置安全管理器成功&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进行第二次设置</span></span><br><span class="line">    System.setSecurityManager(<span class="keyword">new</span> <span class="title class_">SecurityManager</span>());</span><br><span class="line">    System.out.println(<span class="string">&quot;end&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>输出结果</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">设置安全管理器成功</span><br><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> java.lang.RuntimeException: 禁止修改 SecurityManager </span><br><span class="line">	at test.BeautifulMain$<span class="number">1.</span>checkPermission(BeautifulMain.java:<span class="number">21</span>)</span><br><span class="line">	at java.lang.System.setSecurityManager0(System.java:<span class="number">300</span>)</span><br><span class="line">	at java.lang.System.setSecurityManager(System.java:<span class="number">291</span>)</span><br><span class="line">	at test.BeautifulMain.main(BeautifulMain.java:<span class="number">28</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="绕过方法"><a href="#绕过方法" class="headerlink" title="绕过方法"></a>绕过方法</h4><p>模拟以下函数的操作,删去 <code>checkPermission</code> 的操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">synchronized</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setSecurityManager0</span><span class="params">(<span class="keyword">final</span> SecurityManager s)</span> &#123;</span><br><span class="line">    <span class="type">SecurityManager</span> <span class="variable">sm</span> <span class="operator">=</span> getSecurityManager();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ==================================================</span></span><br><span class="line">    <span class="keyword">if</span> (sm != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// ask the currently installed security manager if we</span></span><br><span class="line">        <span class="comment">// can replace it.</span></span><br><span class="line">        sm.checkPermission(<span class="keyword">new</span> <span class="title class_">RuntimePermission</span></span><br><span class="line">                                    (<span class="string">&quot;setSecurityManager&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ==================================================</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((s != <span class="literal">null</span>) &amp;&amp; (s.getClass().getClassLoader() != <span class="literal">null</span>)) &#123;</span><br><span class="line">        <span class="comment">// New security manager class is not on bootstrap classpath.</span></span><br><span class="line">        <span class="comment">// Cause policy to get initialized before we install the new</span></span><br><span class="line">        <span class="comment">// security manager, in order to prevent infinite loops when</span></span><br><span class="line">        <span class="comment">// trying to initialize the policy (which usually involves</span></span><br><span class="line">        <span class="comment">// accessing some security and/or system properties, which in turn</span></span><br><span class="line">        <span class="comment">// calls the installed security manager&#x27;s checkPermission method</span></span><br><span class="line">        <span class="comment">// which will loop infinitely if there is a non-system class</span></span><br><span class="line">        <span class="comment">// (in this case: the new security manager class) on the stack).</span></span><br><span class="line">        AccessController.doPrivileged(<span class="keyword">new</span> <span class="title class_">PrivilegedAction</span>&lt;Object&gt;() &#123;</span><br><span class="line">            <span class="keyword">public</span> Object <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">                s.getClass().getProtectionDomain().implies</span><br><span class="line">                    (SecurityConstants.ALL_PERMISSION);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 设置安全管理器的变量</span></span><br><span class="line">    security = s;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取的安全管理器实例也是这个</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> SecurityManager <span class="title function_">getSecurityManager</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> security;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>实现方法</li>
+</ul>
+<p>通过此函数 setSecurityManager(null); 即可将已设置的安全管理器关闭</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setSecurityManager</span><span class="params">(SecurityManager securityManager)</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 获取当前的安全管理器</span></span><br><span class="line">        <span class="type">SecurityManager</span> <span class="variable">sm</span> <span class="operator">=</span> System.getSecurityManager();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 检查权限</span></span><br><span class="line">        <span class="keyword">if</span> ((sm != <span class="literal">null</span>) &amp;&amp; (sm.getClass().getClassLoader() != <span class="literal">null</span>)) &#123;</span><br><span class="line">        </span><br><span class="line">            AccessController.doPrivileged((PrivilegedAction&lt;Object&gt;) () -&gt; &#123;</span><br><span class="line">                sm.getClass().getProtectionDomain().implies(SecurityConstants.ALL_PERMISSION);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="type">Method</span> <span class="variable">reflectionDataMethod</span> <span class="operator">=</span> Class.class.getDeclaredMethod(<span class="string">&quot;reflectionData&quot;</span>);</span><br><span class="line">        reflectionDataMethod.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="type">Object</span> <span class="variable">reflectionData</span> <span class="operator">=</span> reflectionDataMethod.invoke(System.class);</span><br><span class="line">            </span><br><span class="line">        Field[] res = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (reflectionData != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> reflectionData.getClass().getDeclaredField(<span class="string">&quot;declaredFields&quot;</span>);</span><br><span class="line">            field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            res = (Field[]) field.get(reflectionData);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(res == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> Class.class.getDeclaredMethod(<span class="string">&quot;getDeclaredFields0&quot;</span>, <span class="type">boolean</span>.class);</span><br><span class="line">            method.setAccessible(<span class="literal">true</span>);</span><br><span class="line">            res = (Field[]) method.invoke(System.class, <span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(Field re : res) &#123;</span><br><span class="line">            <span class="keyword">if</span>(re.getName().equals(<span class="string">&quot;security&quot;</span>)) &#123;</span><br><span class="line">                re.setAccessible(<span class="literal">true</span>);</span><br><span class="line">                re.set(<span class="literal">null</span>, securityManager);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这些都是我关于<code>SecurityManager</code>学到的一些小玩意。</p>
+<p>最近开始学习高版本的Java，在翻阅其源码的时候发现<code>SecurityManager</code>被打上了 <code>@Deprecated</code>。本想再靠它再圈一把！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Java%E9%AD%94%E6%B3%95/" rel="tag"># Java魔法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/06/03/VAILD_PASSWORD/" rel="prev" title="蓝桥杯第十五届决赛 A 合法密码">
+                  <i class="fa fa-angle-left"></i> 蓝桥杯第十五届决赛 A 合法密码
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">snowflak3</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
