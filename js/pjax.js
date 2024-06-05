@@ -1,51 +1,45 @@
-/* global NexT, CONFIG, Pjax */
-
-const pjax = new Pjax({
-  selectors: [
-    'head title',
-    'meta[property="og:title"]',
-    'script[type="application/json"]',
-    // Precede .main-inner to prevent placeholder TOC changes asap
-    '.post-toc-wrap',
-    '.main-inner',
-    '.languages',
-    '.pjax'
-  ],
-  switches: {
-    '.post-toc-wrap': function(oldWrap, newWrap) {
-      if (newWrap.querySelector('.post-toc')) {
-        Pjax.switches.outerHTML.call(this, oldWrap, newWrap);
-      } else {
-        const curTOC = oldWrap.querySelector('.post-toc');
-        if (curTOC) {
-          curTOC.classList.add('placeholder-toc');
-        }
-        this.onSwitch();
+$(document).ready(function () {
+  window.addEventListener('pjax:success', () => {
+    $('script[data-pjax]').each(function () {
+      const element = $(this).get(0)
+      const { text, parentNode, id, className, type, src, dataset } = element
+      const code = text || element.textContent || element.innerHTML || ''
+      parentNode.removeChild(element)
+      const script = document.createElement('script')
+      if (id) {
+        script.id = id
       }
+      if (className) {
+        script.className = className
+      }
+      if (type) {
+        script.type = type
+      }
+      if (src) {
+        // Force synchronous loading of peripheral JS.
+        script.src = src
+        script.async = false
+      }
+      if (dataset.pjax !== undefined) {
+        script.dataset.pjax = ''
+      }
+      if (code !== '') {
+        script.appendChild(document.createTextNode(code))
+      }
+      parentNode.appendChild(script)
+    })
+  })
+  window.addEventListener('pjax:complete', () => {
+    $('#header-nav').removeClass('header-nav-hidden')
+    mode = window.localStorage.getItem('dark_mode')
+    if (mode == 'true') {
+      document.body.dispatchEvent(new CustomEvent('dark-theme-set'))
+    } else if (mode == 'false') {
+      document.body.dispatchEvent(new CustomEvent('light-theme-set'))
     }
-  },
-  analytics: false,
-  cacheBust: false,
-  scrollTo : !CONFIG.bookmark.enable
-});
-
-document.addEventListener('pjax:success', () => {
-  pjax.executeScripts(document.querySelectorAll('script[data-pjax]'));
-  NexT.boot.refresh();
-  // Define Motion Sequence & Bootstrap Motion.
-  if (CONFIG.motion.enable) {
-    NexT.motion.integrator
-      .init()
-      .add(NexT.motion.middleWares.subMenu)
-      // Add sidebar-post-related transition.
-      .add(NexT.motion.middleWares.sidebar)
-      .add(NexT.motion.middleWares.postList)
-      .bootstrap();
-  }
-  if (CONFIG.sidebar.display !== 'remove') {
-    const hasTOC = document.querySelector('.post-toc:not(.placeholder-toc)');
-    document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
-    NexT.utils.activateSidebarPanel(hasTOC ? 0 : 1);
-    NexT.utils.updateSidebarPosition();
-  }
+  })
+  if (startLoading)
+    window.addEventListener('pjax:send', startLoading)
+  if (endLoading)
+    window.addEventListener('pjax:complete', endLoading)
 });
