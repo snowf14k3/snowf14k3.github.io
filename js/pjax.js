@@ -1,40 +1,51 @@
-window.addEventListener("pjax:success", () => {
-  _$$("script[data-pjax]").forEach((element) => {
-    const { textContent, parentNode, id, className, type, src, dataset } =
-      element;
-    const code = textContent || "";
-    const script = document.createElement("script");
+/* global NexT, CONFIG, Pjax */
 
-    id && (script.id = id);
-    className && (script.className = className);
-    type && (script.type = type);
-    dataset.pjax !== undefined && (script.dataset.pjax = "");
-
-    if (src) {
-      script.src = src;
-      script.async = false; // Force synchronous loading of peripheral JS
-    } else if (code) {
-      script.textContent = code;
+const pjax = new Pjax({
+  selectors: [
+    'head title',
+    'meta[property="og:title"]',
+    'script[type="application/json"]',
+    // Precede .main-inner to prevent placeholder TOC changes asap
+    '.post-toc-wrap',
+    '.main-inner',
+    '.languages',
+    '.pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': function(oldWrap, newWrap) {
+      if (newWrap.querySelector('.post-toc')) {
+        Pjax.switches.outerHTML.call(this, oldWrap, newWrap);
+      } else {
+        const curTOC = oldWrap.querySelector('.post-toc');
+        if (curTOC) {
+          curTOC.classList.add('placeholder-toc');
+        }
+        this.onSwitch();
+      }
     }
-    parentNode.replaceChild(script, element);
-  });
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
 });
-window.addEventListener("pjax:complete", () => {
-  _$("#header-nav")?.classList.remove("header-nav-hidden");
-  const mode = window.localStorage.getItem("dark_mode");
-  if (mode == "true") {
-    document.body.dispatchEvent(new CustomEvent("dark-theme-set"));
-  } else if (mode == "false") {
-    document.body.dispatchEvent(new CustomEvent("light-theme-set"));
+
+document.addEventListener('pjax:success', () => {
+  pjax.executeScripts(document.querySelectorAll('script[data-pjax]'));
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      // Add sidebar-post-related transition.
+      .add(NexT.motion.middleWares.sidebar)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
   }
-  // destroy waline
-  if(window.walineInstance) {
-    window.walineInstance.destroy();
-    window.walineInstance = null;
+  if (CONFIG.sidebar.display !== 'remove') {
+    const hasTOC = document.querySelector('.post-toc:not(.placeholder-toc)');
+    document.querySelector('.sidebar-inner').classList.toggle('sidebar-nav-active', hasTOC);
+    NexT.utils.activateSidebarPanel(hasTOC ? 0 : 1);
+    NexT.utils.updateSidebarPosition();
   }
 });
-window.addEventListener("pjax:send", () => {
-  window.lightboxStatus = "loading";
-});
-if (startLoading) window.addEventListener("pjax:send", startLoading);
-if (endLoading) window.addEventListener("pjax:complete", endLoading);

@@ -1,32 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.2.0">
 
-  <!DOCTYPE html>
-  <html lang="zh-CN"  data-theme="dark" >
-  <head>
-  <meta charset="utf-8">
-  
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-  
+<link rel="stylesheet" href="/css/main.css">
 
-  
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-  
-  <script>window.icon_font = '4552607_09mhdxci6yrk';window.clipboard_tips = {"success":"复制成功(*^▽^*)","fail":"复制失败 (ﾟ⊿ﾟ)ﾂ"};</script>
-  
-  
-  <title>
-    蓝桥杯第十五届决赛 A 合法密码 |
-    
-    笔记
-  </title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7CNoto%20Serif%20SC:400,400italic,700,700italic%7CUbuntu%20Mono:400,400italic,700,700italic&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7CNoto%20Serif%20SC:400,400italic,700,700italic%7CUbuntu%20Mono:400,400italic,700,700italic&display=swap" media="print" onload="this.media&#x3D;&#39;all&#39;">
-  
-    <link rel="preload" href="//at.alicdn.com/t/c/font_4552607_09mhdxci6yrk.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-  
-  
-<link rel="stylesheet" href="/css/loader.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-  <meta name="description" content="蓝桥杯第十五届决赛 A题  【问题描述】 小蓝正在开发自己的 OJ 网站。他要求网站用户的密码必须符合以下条件：   长度大于等于 8 个字符，小于等于 16 个字符。   必须包含至少 1 个数字字符和至少 1 个符号字符。 例如 lanqiao2024! 、±*&#x2F;0601、8((&gt;w&lt;))8 都是合法的密码。 而 12345678 、####、abc0!#、lanqiao2024">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":true,"show_result":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="蓝桥杯第十五届决赛 A题  【问题描述】 小蓝正在开发自己的 OJ 网站。他要求网站用户的密码必须符合以下条件：   长度大于等于 8 个字符，小于等于 16 个字符。   必须包含至少 1 个数字字符和至少 1 个符号字符。 例如 lanqiao2024! 、±*&#x2F;0601、8((&gt;w&lt;))8 都是合法的密码。 而 12345678 、####、abc0!#、lanqiao2024">
 <meta property="og:type" content="article">
 <meta property="og:title" content="蓝桥杯第十五届决赛 A 合法密码">
 <meta property="og:url" content="http://example.com/2024/06/03/VAILD_PASSWORD/index.html">
@@ -39,124 +33,217 @@
 <meta property="article:tag" content="算法题">
 <meta property="article:tag" content="蓝桥杯">
 <meta name="twitter:card" content="summary">
-  
-  
-    <link rel="shortcut icon" href="/images/favicon.ico">
-  
-  
-<link rel="stylesheet" href="/css/style.css">
 
-  
-<link rel="stylesheet" href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css">
 
-  
-    
-<link rel="stylesheet" href="https://npm.webcache.cn/katex@0.16.9/dist/katex.min.css">
+<link rel="canonical" href="http://example.com/2024/06/03/VAILD_PASSWORD/">
 
-  
-  
-  
-  
-<script src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"></script>
 
-  
-    
-<link rel="stylesheet" href="https://npm.webcache.cn/wowjs@1.1.3/css/libs/animate.css">
 
-    
-<script src="https://npm.webcache.cn/wowjs@1.1.3/dist/wow.min.js"></script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2024/06/03/VAILD_PASSWORD/","path":"2024/06/03/VAILD_PASSWORD/","title":"蓝桥杯第十五届决赛 A 合法密码"}</script>
 
-    <script>
-      new WOW({
-        offset: 0,
-        mobile: true,
-        live: false
-      }).init();
-    </script>
-  
-  
-    <script src="/sw.js"></script>
-  
-<meta name="generator" content="Hexo 7.2.0"><style>.admonition{font-size:20px!important;margin:1.5625em 0;padding:.6rem;overflow:hidden;font-size:.64rem;page-break-inside:avoid;border-left:.3rem solid #42b983;border-radius:.3rem;box-shadow:0 .1rem .4rem rgba(0,0,0,.05),0 0 .05rem rgba(0,0,0,.1);line-height:initial}p.admonition-title{position:relative;margin:-.6rem -.6rem .8em -.6rem!important;padding:.4rem .6rem .4rem 2.5rem;font-weight:700;line-height:2}.admonition-title::before{position:absolute;top:.9rem;left:1rem;width:12px;height:12px;background-color:#42b983;border-radius:50%;content:' '}.admonition.example{border-color:#7c4dff}.admonition.quote{border-color:#aaa}.admonition.info,.admonition.todo{border-color:#00b8d4}.admonition.attention,.admonition.caution,.admonition.warning{border-color:#ff9100}.admonition.error,.admonition.fail,.admonition.failure,.admonition.missing{border-color:#ff5252}.example>.admonition-title::before{background-color:#7c4dff;border-radius:50%}.quote>.admonition-title::before{background-color:#aaa;border-radius:50%}.info>.admonition-title::before,.todo>.admonition-title::before{background-color:#00b8d4;border-radius:50%}.attention>.admonition-title::before,.caution>.admonition-title::before,.warning>.admonition-title::before{background-color:#ff9100;border-radius:50%}.error>.admonition-title::before,.fail>.admonition-title::before,.failure>.admonition-title::before,.missing>.admonition-title::before{background-color:#ff5252;border-radius:50%}.admonition>:last-child{margin-bottom:0!important}@media (prefers-color-scheme:light){.admonition{background-color:#eee}p.admonition-title{background-color:rgba(66,185,131,.4)}.example>.admonition-title{background-color:rgba(124,77,255,.4)}.quote>.admonition-title{background-color:rgba(170,170,170,.4)}.info>.admonition-title,.todo>.admonition-title{background-color:rgba(0,184,212,.4)}.attention>.admonition-title,.caution>.admonition-title,.warning>.admonition-title{background-color:rgba(255,145,0,.4)}.error>.admonition-title,.fail>.admonition-title,.failure>.admonition-title,.missing>.admonition-title{background-color:rgba(255,82,82,.4)}}@media (prefers-color-scheme:dark){.admonition{background-color:#424242}p.admonition-title{background-color:rgba(66,185,131,.2)}.example>.admonition-title{background-color:rgba(124,77,255,.2)}.quote>.admonition-title{background-color:rgba(170,170,170,.2)}.info>.admonition-title,.todo>.admonition-title{background-color:rgba(0,184,212,.2)}.attention>.admonition-title,.caution>.admonition-title,.warning>.admonition-title{background-color:rgba(255,145,0,.2)}.error>.admonition-title,.fail>.admonition-title,.failure>.admonition-title,.missing>.admonition-title{background-color:rgba(255,82,82,.2)}}</style></head>
-
-  <body>
-    
-<div id="copy-tooltip" style="pointer-events: none; opacity: 0; transition: all 0.2s ease; position: fixed;top: 50%;left: 50%;z-index: 999;transform: translate(-50%, -50%);color: white;background: rgba(0, 0, 0, 0.5);padding: 10px 15px;border-radius: 10px;">
-</div>
-
-    <div id="container">
-      <div id="wrap">
-        <div id="header-nav">
-  <nav id="main-nav">
-    
-      <span class="main-nav-link-wrap">
-        <span class="main-nav-icon"></span>
-        <a class="main-nav-link" href="/">首页</a>
-      </span>
-    
-      <span class="main-nav-link-wrap">
-        <span class="main-nav-icon"></span>
-        <a class="main-nav-link" href="/archives">归档</a>
-      </span>
-    
-    <a id="main-nav-toggle" class="nav-icon"></a>
-  </nav>
-  <nav id="sub-nav">
-    
-    
-    
-  </nav>
-</div>
-<header id="header">
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>蓝桥杯第十五届决赛 A 合法密码 | 笔记</title>
   
 
-  
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <div id="logo-wrap">
-        
-          
-          
-            <a href="/" id="logo">
-              <h1>蓝桥杯第十五届决赛 A 合法密码</h1>
-            </a>
-          
-        
-      </div>
-      
-        
-        <h2 id="subtitle-wrap">
-          
-        </h2>
-      
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>.admonition{font-size:20px!important;margin:1.5625em 0;padding:.6rem;overflow:hidden;font-size:.64rem;page-break-inside:avoid;border-left:.3rem solid #42b983;border-radius:.3rem;box-shadow:0 .1rem .4rem rgba(0,0,0,.05),0 0 .05rem rgba(0,0,0,.1);line-height:initial}p.admonition-title{position:relative;margin:-.6rem -.6rem .8em -.6rem!important;padding:.4rem .6rem .4rem 2.5rem;font-weight:700;line-height:2}.admonition-title::before{position:absolute;top:.9rem;left:1rem;width:12px;height:12px;background-color:#42b983;border-radius:50%;content:' '}.admonition.example{border-color:#7c4dff}.admonition.quote{border-color:#aaa}.admonition.info,.admonition.todo{border-color:#00b8d4}.admonition.attention,.admonition.caution,.admonition.warning{border-color:#ff9100}.admonition.error,.admonition.fail,.admonition.failure,.admonition.missing{border-color:#ff5252}.example>.admonition-title::before{background-color:#7c4dff;border-radius:50%}.quote>.admonition-title::before{background-color:#aaa;border-radius:50%}.info>.admonition-title::before,.todo>.admonition-title::before{background-color:#00b8d4;border-radius:50%}.attention>.admonition-title::before,.caution>.admonition-title::before,.warning>.admonition-title::before{background-color:#ff9100;border-radius:50%}.error>.admonition-title::before,.fail>.admonition-title::before,.failure>.admonition-title::before,.missing>.admonition-title::before{background-color:#ff5252;border-radius:50%}.admonition>:last-child{margin-bottom:0!important}@media (prefers-color-scheme:light){.admonition{background-color:#eee}p.admonition-title{background-color:rgba(66,185,131,.4)}.example>.admonition-title{background-color:rgba(124,77,255,.4)}.quote>.admonition-title{background-color:rgba(170,170,170,.4)}.info>.admonition-title,.todo>.admonition-title{background-color:rgba(0,184,212,.4)}.attention>.admonition-title,.caution>.admonition-title,.warning>.admonition-title{background-color:rgba(255,145,0,.4)}.error>.admonition-title,.fail>.admonition-title,.failure>.admonition-title,.missing>.admonition-title{background-color:rgba(255,82,82,.4)}}@media (prefers-color-scheme:dark){.admonition{background-color:#424242}p.admonition-title{background-color:rgba(66,185,131,.2)}.example>.admonition-title{background-color:rgba(124,77,255,.2)}.quote>.admonition-title{background-color:rgba(170,170,170,.2)}.info>.admonition-title,.todo>.admonition-title{background-color:rgba(0,184,212,.2)}.attention>.admonition-title,.caution>.admonition-title,.warning>.admonition-title{background-color:rgba(255,145,0,.2)}.error>.admonition-title,.fail>.admonition-title,.failure>.admonition-title,.missing>.admonition-title{background-color:rgba(255,82,82,.2)}}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
     </div>
   </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">笔记</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">baka专属blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">16</span></a></li>
+  </ul>
+</nav>
+
+
+
+
 </header>
+        
+  
+  <aside class="sidebar">
 
-        <div id="content" class="outer">
-          
-          <section id="main"><article id="post-VAILD_PASSWORD" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-inner">
-    <div class="article-meta">
-      <div class="article-date wow slideInLeft">
-  <a href="/2024/06/03/VAILD_PASSWORD/" class="article-date-link">
-    <time datetime="2024-06-03T15:59:00.000Z" itemprop="datePublished">2024-06-03</time>
-  </a>
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%93%9D%E6%A1%A5%E6%9D%AF%E7%AC%AC%E5%8D%81%E4%BA%94%E5%B1%8A%E5%86%B3%E8%B5%9B-a%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text"> 蓝桥杯第十五届决赛 A题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text"> 【问题描述】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E8%A7%A3"><span class="nav-number">1.2.</span> <span class="nav-text"> 题解</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">snowflak3</p>
+  <div class="site-description" itemprop="description">无用笔记，纯纯记录我的废物经历lol</div>
 </div>
-
-      
-  <div class="article-category wow slideInLeft">
-    <a class="article-category-link" href="/categories/%E8%93%9D%E6%A1%A5%E6%9D%AF%E5%81%9A%E9%A2%98%E7%AC%94%E8%AE%B0/">蓝桥杯做题笔记</a>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/snowf14k3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;snowf14k3" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
   </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
 
 
     </div>
-    <div class="hr-line"></div>
-    
 
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="蓝桥杯第十五届决赛-a题"><a class="markdownIt-Anchor" href="#蓝桥杯第十五届决赛-a题"></a> 蓝桥杯第十五届决赛 A题</h1>
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/06/03/VAILD_PASSWORD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="snowflak3">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笔记">
+      <meta itemprop="description" content="无用笔记，纯纯记录我的废物经历lol">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="蓝桥杯第十五届决赛 A 合法密码 | 笔记">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          蓝桥杯第十五届决赛 A 合法密码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-06-03 23:59:00" itemprop="dateCreated datePublished" datetime="2024-06-03T23:59:00+08:00">2024-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-06-05 20:14:56" itemprop="dateModified" datetime="2024-06-05T20:14:56+08:00">2024-06-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%93%9D%E6%A1%A5%E6%9D%AF%E5%81%9A%E9%A2%98%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">蓝桥杯做题笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="蓝桥杯第十五届决赛-a题"><a class="markdownIt-Anchor" href="#蓝桥杯第十五届决赛-a题"></a> 蓝桥杯第十五届决赛 A题</h1>
 <h2 id="问题描述"><a class="markdownIt-Anchor" href="#问题描述"></a> 【问题描述】</h2>
 <p>小蓝正在开发自己的 OJ 网站。他要求网站用户的密码必须符合以下条件：</p>
 <ol>
@@ -179,362 +266,114 @@
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">test</span> <span class="operator">=</span> <span class="string">&quot;kfdhtshmrw4nxg#f44ehlbn33ccto#mwfn2waebry#3qd1ubwyhcyuavuajb#vyecsycuzsmwp31ipzah#catatja3kaqbcss2th&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">cnt</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> <span class="number">16</span>; <span class="comment">// 最大的框大小为16 依次递减到8</span></span><br><span class="line">        <span class="keyword">while</span> (n &gt;= <span class="number">8</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">while</span> (<span class="literal">true</span>) &#123; <span class="comment">// 无限循环</span></span><br><span class="line">                    <span class="type">String</span> <span class="variable">out</span> <span class="operator">=</span> test.substring(index, n + index); <span class="comment">// 数组越界就跳出循环</span></span><br><span class="line">					</span><br><span class="line">                    <span class="keyword">if</span> (check(out)) &#123; <span class="comment">// 检测函数</span></span><br><span class="line">                        cnt++;</span><br><span class="line">                        System.out.println(out + <span class="string">&quot; &quot;</span> + out.length());</span><br><span class="line">                    &#125;</span><br><span class="line">                    index++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="comment">// 懒得管这个越界</span></span><br><span class="line">            &#125;</span><br><span class="line">            n--;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(cnt); <span class="comment">// 输出数据</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">check</span><span class="params">(String str)</span> &#123;</span><br><span class="line">    	</span><br><span class="line">        <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> <span class="number">0</span>; <span class="comment">// 计算数字的个数</span></span><br><span class="line">    	</span><br><span class="line">        <span class="type">int</span> <span class="variable">other</span> <span class="operator">=</span> <span class="number">0</span>; <span class="comment">// 计算符号的个数</span></span><br><span class="line">    	</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; str.length(); i++) &#123; <span class="comment">// 遍历全部的字符</span></span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> str.charAt(i);</span><br><span class="line"></span><br><span class="line">    		</span><br><span class="line">            <span class="keyword">if</span> (c &gt;= <span class="string">&#x27;0&#x27;</span> &amp;&amp; c &lt;= <span class="string">&#x27;9&#x27;</span>) &#123; <span class="comment">// 是否为数字</span></span><br><span class="line">                num++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">			</span><br><span class="line">    		</span><br><span class="line">            <span class="keyword">if</span> (c == <span class="string">&#x27;#&#x27;</span>) other++; <span class="comment">// 因为输入的数据中只有# 不需要考虑其他字符</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> num &gt;= <span class="number">1</span> &amp;&amp; other &gt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-      
     </div>
-    <footer class="article-footer">
-      
-      
-      
-      
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="tag">算法题</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%93%9D%E6%A1%A5%E6%9D%AF/" rel="tag">蓝桥杯</a></li></ul>
 
+    
+    
+    
 
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="tag"># 算法题</a>
+              <a href="/tags/%E8%93%9D%E6%A1%A5%E6%9D%AF/" rel="tag"># 蓝桥杯</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/06/03/KMP/" rel="prev" title="P3375 KMP算法">
+                  <i class="fa fa-angle-left"></i> P3375 KMP算法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/06/04/SECURITYMANAGER/" rel="next" title="SecurityManager魔法">
+                  SecurityManager魔法 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
     </footer>
-  </div>
-  
-    
-  <nav id="article-nav" class="wow fadeInUp">
-    
-      <div class="article-nav-link-wrap article-nav-link-left">
-        
-          
-          
-            <img data-src="https://pic.imgdb.cn/item/666059d35e6d1bfa05c09401.webp" data-sizes="auto" alt="SecurityManager魔法" class="lazyload">
-          
-        
-        <a href="/2024/06/04/SECURITYMANAGER/"></a>
-        <div class="article-nav-caption">前一篇</div>
-        <h3 class="article-nav-title">
-          
-            SecurityManager魔法
-          
-        </h3>
-      </div>
-    
-    
-    <div class="article-nav-link-wrap article-nav-link-right">
-      
-        
-        
-          <img data-src="https://pic.imgdb.cn/item/666059e25e6d1bfa05c0a412.webp" data-sizes="auto" alt="P3375 KMP算法" class="lazyload">
-        
-      
-      <a href="/2024/06/03/KMP/"></a>
-      <div class="article-nav-caption">后一篇</div>
-      <h3 class="article-nav-title">
-        
-          P3375 KMP算法
-        
-      </h3>
-    </div>
-    
-  </nav>
-
-
-  
-</article>
+  </article>
+</div>
 
 
 
 
 
 
-</section>
-          
-            <aside id="sidebar">
-  <div class="sidebar-wrap wow fadeInRight wrap-sticky">
-    
-      <div class="sidebar-toc-sidebar"><div class="sidebar-toc">
-  <h3 class="toc-title">文章目录</h3>
-  <div class="sidebar-toc-wrapper toc-div-class" >
-      
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%93%9D%E6%A1%A5%E6%9D%AF%E7%AC%AC%E5%8D%81%E4%BA%94%E5%B1%8A%E5%86%B3%E8%B5%9B-a%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text"> 蓝桥杯第十五届决赛 A题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text"> 【问题描述】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E8%A7%A3"><span class="toc-number">1.2.</span> <span class="toc-text"> 题解</span></a></li></ol></li></ol>
-      
-  </div>
 </div>
-</div>
-      <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
-  <img data-src="/avatar/avatar.jpg" data-sizes="auto" alt="snowflak3" class="lazyload">
-  <div class="sidebar-author-name">snowflak3</div>
-  <div class="sidebar-description">无用笔记，纯纯记录我的废物经历lol</div>
-</div>
-<div class="sidebar-state">
-  <div class="sidebar-state-article">
-    <div>文章</div>
-    <div class="sidebar-state-number">16</div>
-  </div>
-  <div class="sidebar-state-category">
-    <div>分类</div>
-    <div class="sidebar-state-number">6</div>
-  </div>
-  <div class="sidebar-state-tag">
-    <div>标签</div>
-    <div class="sidebar-state-number">8</div>
-  </div>
-</div>
-<div class="sidebar-social">
-  
-</div>
-<div class="sidebar-menu">
-  
-    <div class="sidebar-menu-link-wrap">
-      <a class="sidebar-menu-link-dummy" href="/" aria-label="首页"></a>
-      <span class="sidebar-menu-icon"></span>
-      <div class="sidebar-menu-link">首页</div>
-    </div>
-  
-    <div class="sidebar-menu-link-wrap">
-      <a class="sidebar-menu-link-dummy" href="/archives" aria-label="归档"></a>
-      <span class="sidebar-menu-icon"></span>
-      <div class="sidebar-menu-link">归档</div>
-    </div>
-  
-</div>
-</div>
-    
-    
-      <div class="sidebar-btn-wrapper" style="position:static">
-        <div class="sidebar-toc-btn current"></div>
-        <div class="sidebar-common-btn"></div>
-      </div>
-    
-  </div>
+  </main>
 
-  
-</aside>
+  <footer class="footer">
+    <div class="footer-inner">
 
-          
-        </div>
-        <footer id="footer" class="wow fadeInUp">
-  <div style="width: 100%; overflow: hidden">
-    <div class="footer-line"></div>
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">snowflak3</span>
   </div>
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      
-      <div>
-        <span class="icon-copyright"></span>
-        2020-2024
-        <span class="footer-info-sep"></span>
-        snowflak3
-      </div>
-      
-        <div>
-          基于&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>&nbsp;
-          Theme.<a href="https://github.com/D-Sketon/hexo-theme-reimu" target="_blank">Reimu</a>
-        </div>
-      
-      
-        <div>
-          <span class="icon-brush"></span>
-          11k
-          &nbsp;|&nbsp;
-          <span class="icon-coffee"></span>
-          00:46
-        </div>
-      
-      
-        <div>
-          <span class="icon-eye"></span>
-          <span id="busuanzi_container_site_pv">总访问量&nbsp;<span id="busuanzi_value_site_pv"></span></span>
-          &nbsp;|&nbsp;
-          <span class="icon-user"></span>
-          <span id="busuanzi_container_site_uv">总访客量&nbsp;<span id="busuanzi_value_site_uv"></span></span>
-        </div>
-      
-    </div>
-  </div>
-</footer>
-
-        <div class="sidebar-top">
-          <img src="/images/taichi.png" height="50" width="50" alt="backtop" />
-          <div class="arrow-up"></div>
-        </div>
-        <div id="mask"></div>
-      </div>
-      <nav id="mobile-nav">
-  <div class="sidebar-wrap">
-    
-      <div class="sidebar-toc-sidebar"><div class="sidebar-toc">
-  <h3 class="toc-title">文章目录</h3>
-  <div class="sidebar-toc-wrapper toc-div-class" >
-      
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%93%9D%E6%A1%A5%E6%9D%AF%E7%AC%AC%E5%8D%81%E4%BA%94%E5%B1%8A%E5%86%B3%E8%B5%9B-a%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text"> 蓝桥杯第十五届决赛 A题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text"> 【问题描述】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E8%A7%A3"><span class="toc-number">1.2.</span> <span class="toc-text"> 题解</span></a></li></ol></li></ol>
-      
-  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">41k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">37 分钟</span>
+  </span>
 </div>
-</div>
-      <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
-  <img data-src="/avatar/avatar.jpg" data-sizes="auto" alt="snowflak3" class="lazyload">
-  <div class="sidebar-author-name">snowflak3</div>
-  <div class="sidebar-description">无用笔记，纯纯记录我的废物经历lol</div>
-</div>
-<div class="sidebar-state">
-  <div class="sidebar-state-article">
-    <div>文章</div>
-    <div class="sidebar-state-number">16</div>
-  </div>
-  <div class="sidebar-state-category">
-    <div>分类</div>
-    <div class="sidebar-state-number">6</div>
-  </div>
-  <div class="sidebar-state-tag">
-    <div>标签</div>
-    <div class="sidebar-state-number">8</div>
-  </div>
-</div>
-<div class="sidebar-social">
-  
-</div>
-<div class="sidebar-menu">
-  
-    <div class="sidebar-menu-link-wrap">
-      <a class="sidebar-menu-link-dummy" href="/" aria-label="首页"></a>
-      <span class="sidebar-menu-icon"></span>
-      <div class="sidebar-menu-link">首页</div>
-    </div>
-  
-    <div class="sidebar-menu-link-wrap">
-      <a class="sidebar-menu-link-dummy" href="/archives" aria-label="归档"></a>
-      <span class="sidebar-menu-icon"></span>
-      <div class="sidebar-menu-link">归档</div>
-    </div>
-  
-</div>
-</div>
-    
-  </div>
-  
-    <div class="sidebar-btn-wrapper">
-      <div class="sidebar-toc-btn current"></div>
-      <div class="sidebar-common-btn"></div>
-    </div>
-  
-</nav>
 
     </div>
-    <div class="site-search">
-      <div class="reimu-popup popup">
-        <div class="reimu-search">
-          <span class="reimu-search-input-icon"></span>
-          <div class="reimu-search-input" id="reimu-search-input"></div>
-        </div>
-        <div class="reimu-results">
-          <div id="reimu-stats"></div>
-          <div id="reimu-hits"></div>
-          <div id="reimu-pagination" class="reimu-pagination"></div>
-        </div>
-        <span class="popup-btn-close"></span>
-      </div>
-    </div>
-    
-<script src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"></script>
+  </footer>
 
-
-<script src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"></script>
-
-
-
-<script src="/js/script.js"></script>
-
-
-
-<script src="/js/pjax_script.js" data-pjax></script>
-
-
-<script type="module" data-pjax>
-  import PhotoSwipeLightbox from "https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.js";
   
-  const pswp = () => {
-    if (_$$('.article-entry a.article-gallery-item').length > 0) {
-      new PhotoSwipeLightbox({
-        gallery: '.article-entry',
-        children: 'a.article-gallery-item',
-        pswpModule: () => import("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.esm.js")
-      }).init();
-    }
-    if(_$$('.article-gallery a.article-gallery-item').length > 0) {
-      new PhotoSwipeLightbox({
-        gallery: '.article-gallery',
-        children: 'a.article-gallery-item',
-        pswpModule: () => import("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.esm.js")
-      }).init();
-    }
-    window.lightboxStatus = 'done';
-    window.removeEventListener('lightbox:ready', pswp);
-  }
-  if(window.lightboxStatus === 'ready') {
-    pswp()
-  } else {
-    window.addEventListener('lightbox:ready', pswp);
-  }
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div id="lazy-script">
-  <div>
-    
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
   </div>
-</div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
 
-
-  <script>
-    console.log(String.raw`%c 
- ______     ______     __     __    __     __  __    
-/\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
-\ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
- \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
-  \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
-                                                  
-`,'color: #ff5252;')
-    console.log('%c Theme.Reimu v' + '0.2.0' + ' %c https://github.com/D-Sketon/hexo-theme-reimu ', 'color: white; background: #ff5252; padding:5px 0;', 'padding:4px;border:1px solid #ff5252;')
-  </script>
-  
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
 
 
   
-<script src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js" async></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
 
 
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<!-- hexo injector body_end start -->
-<script src="/js/insert_highlight.js" data-pjax></script>
-<!-- hexo injector body_end end --></body>
-  </html>
 
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
