@@ -10,17 +10,18 @@
   
 
   
+  <script>window.icon_font = '4552607_09mhdxci6yrk';window.clipboard_tips = {"success":"复制成功(*^▽^*)","fail":"复制失败 (ﾟ⊿ﾟ)ﾂ"};</script>
+  
+  
   <title>
     
     笔记
   </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="preload" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7CNoto%20Serif%20SC:400,400italic,700,700italic%7CUbuntu%20Mono:400,400italic,700,700italic&display=swap&subset=latin,latin-ext" as="style" onload="this.onload&#x3D;null;this.rel&#x3D;&#39;stylesheet&#39;">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin><link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7CNoto%20Serif%20SC:400,400italic,700,700italic%7CUbuntu%20Mono:400,400italic,700,700italic&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7CNoto%20Serif%20SC:400,400italic,700,700italic%7CUbuntu%20Mono:400,400italic,700,700italic&display=swap" media="print" onload="this.media&#x3D;&#39;all&#39;">
   
-<link rel="stylesheet" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@6.5.1/css/regular.min.css">
-<link rel="stylesheet" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@6.5.1/css/solid.min.css">
-
-  <link rel="preload" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@6.5.1/css/brands.min.css" as="style" onload="this.onload&#x3D;null;this.rel&#x3D;&#39;stylesheet&#39;"><link rel="preload" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@6.5.1/css/v5-font-face.min.css" as="style" onload="this.onload&#x3D;null;this.rel&#x3D;&#39;stylesheet&#39;"><link rel="preload" href="https://npm.webcache.cn/@fortawesome/fontawesome-free@6.5.1/css/v4-font-face.min.css" as="style" onload="this.onload&#x3D;null;this.rel&#x3D;&#39;stylesheet&#39;">
+    <link rel="preload" href="//at.alicdn.com/t/c/font_4552607_09mhdxci6yrk.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  
   
 <link rel="stylesheet" href="/css/loader.css">
 
@@ -38,14 +39,11 @@
     <link rel="shortcut icon" href="/images/favicon.ico">
   
   
-  
 <link rel="stylesheet" href="/css/style.css">
 
   
-    
-<link rel="stylesheet" href="https://npm.webcache.cn/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+<link rel="stylesheet" href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css">
 
-  
   
     
 <link rel="stylesheet" href="https://npm.webcache.cn/katex@0.16.9/dist/katex.min.css">
@@ -78,6 +76,8 @@
 
   <body>
     
+<div id="copy-tooltip" style="pointer-events: none; opacity: 0; transition: all 0.2s ease; position: fixed;top: 50%;left: 50%;z-index: 999;transform: translate(-50%, -50%);color: white;background: rgba(0, 0, 0, 0.5);padding: 10px 15px;border-radius: 10px;">
+</div>
 
     <div id="container">
       <div id="wrap">
@@ -104,7 +104,9 @@
 </div>
 <header id="header">
   
-    <img fetchpriority="high" src="/images/banner2.png" alt="">
+    
+      <img fetchpriority="high" src="/images/banner2.png" alt="">
+    
   
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
@@ -137,32 +139,35 @@
   
   <div class="post-wrap-left wow fadeInUp">
     
-      <a class="post-link" href="/2024/06/10/%E8%B4%A8%E7%82%B9%E8%BF%90%E5%8A%A8/" aria-label="质点运动"></a>
+      <a class="post-link" href="/2024/06/28/JVMTI/" aria-label="JVMTI"></a>
     
     
     <div class="post-cover-left">
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059995e6d1bfa05c05afb.png" data-sizes="auto" alt="质点运动" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059e25e6d1bfa05c0a412.webp" data-sizes="auto" alt="JVMTI" class="lazyload">
         
       
     </div>
     <div class="post-info">
       <div class="post-meta">
-        <span><span class="icon-calendar"></span>2024-06-10</span>
-        <span><span class="icon-pencil"></span>964 字</span>
-        <span><span class="icon-clock"></span>5 分钟</span>
+        <span><span class="icon-calendar"></span>2024-06-28</span>
+        <span><span class="icon-pencil"></span>344 字</span>
+        <span><span class="icon-clock"></span>1 分钟</span>
       </div>
-      <h2 class="post-title">质点运动</h2>
+      <h2 class="post-title">JVMTI</h2>
       <article class="post-article">
         
-           质点运动
-由于学校会考的比较简单，直接贴概念和公式出来。
- 位置矢量(位矢)
-表达方式 r→=xi→+yj→+zk→\overrightarrow{r} = x\overrightarrow{i} + y\overrightarrow{j}+z\overrightarrow{k}r=xi+yj​+zk
-其大小为 r=∣r∣=x2+y2+z2r = |r| = \sqrt{x^2+y^2+z^2}r=∣r∣=x2+y2+z2​
-有 A=(x,y,z)A =(x,y,z)A=(x,y,z) ，那么A点位置矢量为  r→=OA→\overrightarrow{r} = \overrightarro
+           介绍
+JVMTI（Java Virtual Machine Tool Interface）是一个由Oracle提供的标准接口，
+用于在Java虚拟机（JVM）上创建工具和应用程序。允许开发者在运行时监控和修改JVM的行为，
+让JVMTI成为进行性能分析、监控、调试和其他类型工具开发的强大工具。
+ ClassTransformer
+
+本文主要介绍用 JNI_OnLoad 获取 jvmti 进行设置 ClassFileLoadHook 事件
+
+12345678910111213141516171819202122232425262728293031323334353637383940414243
         
       </article>
     </div>
@@ -173,13 +178,13 @@
   
   <div class="post-wrap-right wow fadeInUp">
     
-    <a class="post-link" href="/2024/06/05/ANGRY_COW/"></a>
+    <a class="post-link" href="/2024/06/05/ANGRY_COW/" aria-label="愤怒的牛"></a>
     
     <div class="post-cover-right">
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059e45e6d1bfa05c0a5a3.webp" data-sizes="auto" alt="愤怒的牛" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059995e6d1bfa05c05afb.png" data-sizes="auto" alt="愤怒的牛" class="lazyload">
         
       
     </div>
@@ -214,7 +219,7 @@
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059d55e6d1bfa05c09692.webp" data-sizes="auto" alt="P5788 单调栈" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059e25e6d1bfa05c0a412.webp" data-sizes="auto" alt="P5788 单调栈" class="lazyload">
         
       
     </div>
@@ -244,13 +249,13 @@
   
   <div class="post-wrap-right wow fadeInUp">
     
-    <a class="post-link" href="/2024/06/04/SECURITYMANAGER/"></a>
+    <a class="post-link" href="/2024/06/04/SECURITYMANAGER/" aria-label="SecurityManager魔法"></a>
     
     <div class="post-cover-right">
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059d35e6d1bfa05c09401.webp" data-sizes="auto" alt="SecurityManager魔法" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059b85e6d1bfa05c07ae5.webp" data-sizes="auto" alt="SecurityManager魔法" class="lazyload">
         
       
     </div>
@@ -288,7 +293,7 @@
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059e05e6d1bfa05c0a189.webp" data-sizes="auto" alt="蓝桥杯第十五届决赛 A 合法密码" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059d55e6d1bfa05c09692.webp" data-sizes="auto" alt="蓝桥杯第十五届决赛 A 合法密码" class="lazyload">
         
       
     </div>
@@ -325,13 +330,13 @@
   
   <div class="post-wrap-right wow fadeInUp">
     
-    <a class="post-link" href="/2024/06/03/MAXNUM/"></a>
+    <a class="post-link" href="/2024/06/03/MAXNUM/" aria-label="P1012 拼数"></a>
     
     <div class="post-cover-right">
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059e25e6d1bfa05c0a412.webp" data-sizes="auto" alt="P1012 拼数" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059e45e6d1bfa05c0a5a3.webp" data-sizes="auto" alt="P1012 拼数" class="lazyload">
         
       
     </div>
@@ -368,7 +373,7 @@
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059e45e6d1bfa05c0a5a3.webp" data-sizes="auto" alt="P1024 一元三次方程求解" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059995e6d1bfa05c05afb.png" data-sizes="auto" alt="P1024 一元三次方程求解" class="lazyload">
         
       
     </div>
@@ -395,13 +400,13 @@
   
   <div class="post-wrap-right wow fadeInUp">
     
-    <a class="post-link" href="/2024/06/03/KMP/"></a>
+    <a class="post-link" href="/2024/06/03/KMP/" aria-label="P3375 KMP算法"></a>
     
     <div class="post-cover-right">
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059e45e6d1bfa05c0a5a3.webp" data-sizes="auto" alt="P3375 KMP算法" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059d55e6d1bfa05c09692.webp" data-sizes="auto" alt="P3375 KMP算法" class="lazyload">
         
       
     </div>
@@ -472,7 +477,7 @@ B
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059995e6d1bfa05c05afb.png" data-sizes="auto" alt="P1866 编号" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059b85e6d1bfa05c07ae5.webp" data-sizes="auto" alt="P1866 编号" class="lazyload">
         
       
     </div>
@@ -508,13 +513,13 @@ B
   
   <div class="post-wrap-right wow fadeInUp">
     
-    <a class="post-link" href="/2024/06/03/P1886/"></a>
+    <a class="post-link" href="/2024/06/03/P1886/" aria-label="P1886 滑动窗口"></a>
     
     <div class="post-cover-right">
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059e05e6d1bfa05c0a189.webp" data-sizes="auto" alt="P1886 滑动窗口" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059d35e6d1bfa05c09401.webp" data-sizes="auto" alt="P1886 滑动窗口" class="lazyload">
         
       
     </div>
@@ -572,18 +577,14 @@ B
   </div>
   <div class="sidebar-state-category">
     <div>分类</div>
-    <div class="sidebar-state-number">7</div>
+    <div class="sidebar-state-number">6</div>
   </div>
   <div class="sidebar-state-tag">
     <div>标签</div>
-    <div class="sidebar-state-number">9</div>
+    <div class="sidebar-state-number">8</div>
   </div>
 </div>
 <div class="sidebar-social">
-  
-    <div class=icon-github>
-      <a href=https://github.com/snowf14k3 itemprop="url" target="_blank" aria-label="github"></a>
-    </div>
   
 </div>
 <div class="sidebar-menu">
@@ -631,6 +632,14 @@ B
         </div>
       
       
+        <div>
+          <span class="icon-brush"></span>
+          11k
+          &nbsp;|&nbsp;
+          <span class="icon-coffee"></span>
+          00:46
+        </div>
+      
       
         <div>
           <span class="icon-eye"></span>
@@ -645,7 +654,7 @@ B
 </footer>
 
         <div class="sidebar-top">
-          <img src="/images/taichi.png" height="50" width="50" />
+          <img src="/images/taichi.png" height="50" width="50" alt="backtop" />
           <div class="arrow-up"></div>
         </div>
         <div id="mask"></div>
@@ -665,18 +674,14 @@ B
   </div>
   <div class="sidebar-state-category">
     <div>分类</div>
-    <div class="sidebar-state-number">7</div>
+    <div class="sidebar-state-number">6</div>
   </div>
   <div class="sidebar-state-tag">
     <div>标签</div>
-    <div class="sidebar-state-number">9</div>
+    <div class="sidebar-state-number">8</div>
   </div>
 </div>
 <div class="sidebar-social">
-  
-    <div class=icon-github>
-      <a href=https://github.com/snowf14k3 itemprop="url" target="_blank" aria-label="github"></a>
-    </div>
   
 </div>
 <div class="sidebar-menu">
@@ -716,9 +721,6 @@ B
       </div>
     </div>
     
-<script src="https://npm.webcache.cn/jquery@3.7.1/dist/jquery.min.js"></script>
-
-
 <script src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"></script>
 
 
@@ -726,43 +728,41 @@ B
 
 
 
-  
-<script src="https://npm.webcache.cn/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
-
-
-
-  
-<script src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js" async></script>
-
-
-
+<script src="/js/script.js"></script>
 
 
 
 <script src="/js/pjax_script.js" data-pjax></script>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<script type="module" data-pjax>
+  import PhotoSwipeLightbox from "https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.js";
   
-<script src="https://npm.webcache.cn/mouse-firework@0.0.4/dist/index.umd.js"></script>
+  const pswp = () => {
+    if (_$$('.article-entry a.article-gallery-item').length > 0) {
+      new PhotoSwipeLightbox({
+        gallery: '.article-entry',
+        children: 'a.article-gallery-item',
+        pswpModule: () => import("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.esm.js")
+      }).init();
+    }
+    if(_$$('.article-gallery a.article-gallery-item').length > 0) {
+      new PhotoSwipeLightbox({
+        gallery: '.article-gallery',
+        children: 'a.article-gallery-item',
+        pswpModule: () => import("https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.esm.js")
+      }).init();
+    }
+    window.lightboxStatus = 'done';
+    window.removeEventListener('lightbox:ready', pswp);
+  }
+  if(window.lightboxStatus === 'ready') {
+    pswp()
+  } else {
+    window.addEventListener('lightbox:ready', pswp);
+  }
+</script>
 
-  <script>
-    firework(JSON.parse('{"excludeElements":["a","button"],"particles":[{"shape":"circle","move":["emit"],"easing":"easeOutExpo","colors":["#ff5252","#ff7c7c","#ffafaf","#ffd0d0"],"number":20,"duration":[1200,1800],"shapeOptions":{"radius":[16,32],"alpha":[0.3,0.5]}},{"shape":"circle","move":["diffuse"],"easing":"easeOutExpo","colors":["#ff0000"],"number":1,"duration":[1200,1800],"shapeOptions":{"radius":20,"alpha":[0.2,0.5],"lineWidth":6}}]}'))
-  </script>
 
 
 
@@ -770,8 +770,24 @@ B
 
 
 
-<script src="/js/script.js"></script>
 
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="lazy-script">
+  <div>
+    
+  </div>
+</div>
 
 
   <script>
@@ -783,9 +799,14 @@ B
   \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
                                                   
 `,'color: #ff5252;')
-    console.log('%c Theme.Reimu v' + '0.1.2' + ' %c https://github.com/D-Sketon/hexo-theme-reimu ', 'color: white; background: #ff5252; padding:5px 0;', 'padding:4px;border:1px solid #ff5252;')
+    console.log('%c Theme.Reimu v' + '0.2.0' + ' %c https://github.com/D-Sketon/hexo-theme-reimu ', 'color: white; background: #ff5252; padding:5px 0;', 'padding:4px;border:1px solid #ff5252;')
   </script>
   
+
+
+  
+<script src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js" async></script>
+
 
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({

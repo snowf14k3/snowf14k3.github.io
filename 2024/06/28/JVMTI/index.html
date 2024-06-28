@@ -14,7 +14,7 @@
   
   
   <title>
-    Selenium Python环境配置 |
+    JVMTI |
     
     笔记
   </title>
@@ -26,28 +26,21 @@
   
 <link rel="stylesheet" href="/css/loader.css">
 
-  <meta name="description" content="前提  安装好基本的环境 pycharm安装 chrome浏览器下载   下载驱动 国内驱动镜像下载 https:&#x2F;&#x2F;registry.npmmirror.com&#x2F;binary.html?path&#x3D;chromedriver&#x2F; 如果无法连接，就从这个网址下载驱动 https:&#x2F;&#x2F;getwebdriver.com&#x2F;  安装驱动 i. 这边以 getwebdriver.com 为例子 ii. 上图中显">
+  <meta name="description" content="介绍 JVMTI（Java Virtual Machine Tool Interface）是一个由Oracle提供的标准接口， 用于在Java虚拟机（JVM）上创建工具和应用程序。允许开发者在运行时监控和修改JVM的行为， 让JVMTI成为进行性能分析、监控、调试和其他类型工具开发的强大工具。  ClassTransformer  本文主要介绍用 JNI_OnLoad 获取 jvmti 进行设置">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Selenium Python环境配置">
-<meta property="og:url" content="http://example.com/2024/06/03/SELENIUM_PYTHON/index.html">
+<meta property="og:title" content="JVMTI">
+<meta property="og:url" content="http://example.com/2024/06/28/JVMTI/index.html">
 <meta property="og:site_name" content="笔记">
-<meta property="og:description" content="前提  安装好基本的环境 pycharm安装 chrome浏览器下载   下载驱动 国内驱动镜像下载 https:&#x2F;&#x2F;registry.npmmirror.com&#x2F;binary.html?path&#x3D;chromedriver&#x2F; 如果无法连接，就从这个网址下载驱动 https:&#x2F;&#x2F;getwebdriver.com&#x2F;  安装驱动 i. 这边以 getwebdriver.com 为例子 ii. 上图中显">
+<meta property="og:description" content="介绍 JVMTI（Java Virtual Machine Tool Interface）是一个由Oracle提供的标准接口， 用于在Java虚拟机（JVM）上创建工具和应用程序。允许开发者在运行时监控和修改JVM的行为， 让JVMTI成为进行性能分析、监控、调试和其他类型工具开发的强大工具。  ClassTransformer  本文主要介绍用 JNI_OnLoad 获取 jvmti 进行设置">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_78966d63cc4d413fb74a2b857ae75b38.png">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_2569b8d8a7974a0ca100c66c753668e5.png">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_f82f94f8ccff4cea9edc1f7cbd6d9285.png">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_0304368b8d444c4b9f8530b7889f6703.png">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_0f89f490c8804a28affc1b0ddc39bade.png">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_ed046178ca284842933f5006cf033bbe.png">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_18533a8d33474b00b6a396ac6959e70a.png">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_e6b00103a2e1409cbc2d36ad25cad63b.png">
-<meta property="og:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_6f640e4c42ed488eab697343262e077a.png">
-<meta property="article:published_time" content="2024-06-03T05:24:20.000Z">
-<meta property="article:modified_time" content="2024-06-05T12:14:53.887Z">
+<meta property="og:image" content="https://www.gravizo.com/svg?@startuml;(*)%20--%3E%20%20%20if%20%22classLoad%22%20then;%20%20--%3E[true]%20%22classFileHook%22;%20%20if%20%22transformClass%22%20then;%20%20%20%20--%3E[true]%20%22redfineclass%22%20as%20a3;%20%20else;%20%20%20%20--%3E[false]%20%22return%20orignal%20classBytes%22;%20%20endif;else;%20%20-%3E[false]%20%22class%20verify%20error%22;endif;a3%20--%3E%20if%20%22%22%20then;%20%20--%3E[true]%20%22reloadClass%22;else;%20%20--%3E%20[false]%20%22return%20orignal%20classBytes%22;endif;@enduml">
+<meta property="article:published_time" content="2024-06-28T02:14:20.000Z">
+<meta property="article:modified_time" content="2024-06-28T14:25:11.459Z">
 <meta property="article:author" content="snowflak3">
-<meta property="article:tag" content="软件测试">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Java魔法">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_78966d63cc4d413fb74a2b857ae75b38.png">
+<meta name="twitter:image" content="https://www.gravizo.com/svg?@startuml;(*)%20--%3E%20%20%20if%20%22classLoad%22%20then;%20%20--%3E[true]%20%22classFileHook%22;%20%20if%20%22transformClass%22%20then;%20%20%20%20--%3E[true]%20%22redfineclass%22%20as%20a3;%20%20else;%20%20%20%20--%3E[false]%20%22return%20orignal%20classBytes%22;%20%20endif;else;%20%20-%3E[false]%20%22class%20verify%20error%22;endif;a3%20--%3E%20if%20%22%22%20then;%20%20--%3E[true]%20%22reloadClass%22;else;%20%20--%3E%20[false]%20%22return%20orignal%20classBytes%22;endif;@enduml">
   
   
     <link rel="shortcut icon" href="/images/favicon.ico">
@@ -127,7 +120,7 @@
           
           
             <a href="/" id="logo">
-              <h1>Selenium Python环境配置</h1>
+              <h1>JVMTI</h1>
             </a>
           
         
@@ -144,18 +137,18 @@
 
         <div id="content" class="outer">
           
-          <section id="main"><article id="post-SELENIUM_PYTHON" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+          <section id="main"><article id="post-JVMTI" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-inner">
     <div class="article-meta">
       <div class="article-date wow slideInLeft">
-  <a href="/2024/06/03/SELENIUM_PYTHON/" class="article-date-link">
-    <time datetime="2024-06-03T05:24:20.000Z" itemprop="datePublished">2024-06-03</time>
+  <a href="/2024/06/28/JVMTI/" class="article-date-link">
+    <time datetime="2024-06-28T02:14:20.000Z" itemprop="datePublished">2024-06-28</time>
   </a>
 </div>
 
       
   <div class="article-category wow slideInLeft">
-    <a class="article-category-link" href="/categories/%E8%BD%AF%E4%BB%B6%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/">软件自动化测试</a>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
   </div>
 
 
@@ -165,83 +158,24 @@
 
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1 id="前提"><a class="markdownIt-Anchor" href="#前提"></a> 前提</h1>
-<ol>
-<li>安装好基本的环境</li>
-<li>pycharm安装</li>
-<li>chrome浏览器下载</li>
-</ol>
-<h1 id="下载驱动"><a class="markdownIt-Anchor" href="#下载驱动"></a> 下载驱动</h1>
-<p>国内驱动镜像下载<br>
-<a target="_blank" rel="noopener" href="https://registry.npmmirror.com/binary.html?path=chromedriver/">https://registry.npmmirror.com/binary.html?path=chromedriver/</a><br>
-如果无法连接，就从这个网址下载驱动<br>
-<a target="_blank" rel="noopener" href="https://getwebdriver.com/">https://getwebdriver.com/</a></p>
-<h1 id="安装驱动"><a class="markdownIt-Anchor" href="#安装驱动"></a> 安装驱动</h1>
-<p>i. 这边以 <a target="_blank" rel="noopener" href="http://getwebdriver.com">getwebdriver.com</a> 为例子<img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_78966d63cc4d413fb74a2b857ae75b38.png" alt="image.png"><br>
-ii. 上图中显示123为最新（为了方便这边建议你直接升级到最新的chrome浏览器的版本),点击Stable版本<br>
-iii. 按照系统架构下载(一般下载x64)  <img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_2569b8d8a7974a0ca100c66c753668e5.png" alt="image.png"><br>
-iv. 下载完成后把压缩包中的chromedriver.exe放入chrome文件夹中<br>
-<img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_f82f94f8ccff4cea9edc1f7cbd6d9285.png" alt="image.png"></p>
-<h1 id="配置驱动"><a class="markdownIt-Anchor" href="#配置驱动"></a> 配置驱动</h1>
-<ul>
-<li>将chromedriver.exe所在位置添加至Path中<br>
-<img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_0304368b8d444c4b9f8530b7889f6703.png" alt="image.png"></li>
-<li>添加我这边是(C:\Program Files\Google\Chrome\Application)<br>
-<img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_0f89f490c8804a28affc1b0ddc39bade.png" alt="image.png"></li>
-<li>大功告成</li>
-</ul>
-<h1 id="配置pycharm环境"><a class="markdownIt-Anchor" href="#配置pycharm环境"></a> 配置pycharm环境</h1>
-<ol>
-<li>打开设置<br>
-<img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_ed046178ca284842933f5006cf033bbe.png" alt="image.png"></li>
-<li>找到python interpreter,点击右侧的 + 号<br>
-<img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_18533a8d33474b00b6a396ac6959e70a.png" alt="image.png"></li>
-<li>输入selenium查找包(如果列表没项目选择，需要等待一会)，点击安装包(install Package)<br>
-<img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_e6b00103a2e1409cbc2d36ad25cad63b.png" alt="image.png"><br>
-4.等待下载完成</li>
-</ol>
-<h1 id="测试驱动"><a class="markdownIt-Anchor" href="#测试驱动"></a> 测试驱动</h1>
-<ul>
-<li>先新建py文件</li>
-</ul>
-<pre class="highlight"><code class="python"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver
-
-<span class="comment"># print可有可无</span>
-<span class="built_in">print</span>(<span class="string">&quot;start...&quot;</span>)
-driver = webdriver.Chrome()
-<span class="built_in">print</span>(<span class="string">&quot;init...&quot;</span>)
-driver.get(<span class="string">&quot;https://www.bing.com/&quot;</span>)
-<span class="built_in">print</span>(<span class="string">&quot;end....&quot;</span>)
-</code></pre>
-<ul>
-<li>
-<p>点击运行按钮<br>
-<img src="https://ucc.alicdn.com/pic/developer-ecology/tnqcd4ircymxs_6f640e4c42ed488eab697343262e077a.png" alt="image.png"></p>
-</li>
-<li>
-<p>如果自动打开了浏览器那么说明你完成了配置</p>
-</li>
-<li>
-<p>如果你产生了报错，往下翻()</p>
-</li>
-</ul>
-<h1 id="错误修复"><a class="markdownIt-Anchor" href="#错误修复"></a> 错误修复</h1>
+        <h1 id="介绍"><a class="markdownIt-Anchor" href="#介绍"></a> 介绍</h1>
+<p>JVMTI（Java Virtual Machine Tool Interface）是一个由Oracle提供的标准接口，<br>
+用于在Java虚拟机（JVM）上创建工具和应用程序。允许开发者在运行时监控和修改JVM的行为，<br>
+让JVMTI成为进行性能分析、监控、调试和其他类型工具开发的强大工具。</p>
+<h1 id="classtransformer"><a class="markdownIt-Anchor" href="#classtransformer"></a> ClassTransformer</h1>
 <blockquote>
-<p>有多种错误</p>
+<p>本文主要介绍用 <code>JNI_OnLoad</code> 获取 <code>jvmti</code> 进行设置 <code>ClassFileLoadHook</code> 事件</p>
 </blockquote>
-<ol>
-<li>timeout</li>
-<li>驱动版本不对</li>
-</ol>
-<p>i. timeout</p>
-<ul>
-<li>可以尝试关闭防火墙，更换驱动存放位置</li>
-</ul>
-<p>ii. 驱动版本不对</p>
-<ul>
-<li>重新下载 浏览器驱动 或者 更新 浏览器版本</li>
-</ul>
-
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 用于将 类重新加载一次，相当于执行一次 ClassFileLoadHook，拿到类的字节</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="type">void</span> JNICALL <span class="title">retransformClass</span><span class="params">(JNIEnv *env, jclass caller, jclass target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    jvmti-&gt;<span class="built_in">RetransformClasses</span>(<span class="number">1</span>, &amp;target);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重新定义 类的字节码</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="type">void</span> JNICALL <span class="title">redefineClass</span><span class="params">(JNIEnv *env, jclass caller, jclass target, jbyteArray classBytes)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    jvmtiClassDefinition classDef;</span><br><span class="line"></span><br><span class="line">    classDef.klass = target;</span><br><span class="line">    classDef.class_byte_count = env-&gt;<span class="built_in">GetArrayLength</span>(classBytes);</span><br><span class="line">    classDef.class_bytes = (<span class="type">unsigned</span> <span class="type">char</span> *)env-&gt;<span class="built_in">GetByteArrayElements</span>(classBytes, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    jvmti-&gt;<span class="built_in">RedefineClasses</span>(<span class="number">1</span>, &amp;classDef);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">JNIEXPORT jint JNICALL <span class="title">JNI_OnLoad</span><span class="params">(JavaVM *vm, <span class="type">void</span> *reserved)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">    vm-&gt;<span class="built_in">GetEnv</span>((<span class="type">void</span> **)&amp;jvmti, JVMTI_VERSION_1_1);</span><br><span class="line"></span><br><span class="line">    jvmtiCapabilities caps;</span><br><span class="line">    <span class="built_in">memset</span>(&amp;caps, <span class="number">0</span>, <span class="built_in">sizeof</span>(caps));</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置能够使用 classHook 事件</span></span><br><span class="line">    caps.can_generate_all_class_hook_events = <span class="number">1</span>;</span><br><span class="line">    caps.can_retransform_any_class = <span class="number">1</span>;</span><br><span class="line">    caps.can_retransform_classes = <span class="number">1</span>;</span><br><span class="line">    caps.can_redefine_any_class = <span class="number">1</span>;</span><br><span class="line">    caps.can_redefine_classes = <span class="number">1</span>;</span><br><span class="line">    jvmti-&gt;<span class="built_in">AddCapabilities</span>(&amp;caps);</span><br><span class="line"></span><br><span class="line">    jvmtiEventCallbacks callbacks = &#123;&#125;;</span><br><span class="line">    callbacks.ClassFileLoadHook = &amp;classFileLoadHook;</span><br><span class="line">    jvmti-&gt;<span class="built_in">SetEventCallbacks</span>(&amp;callbacks, <span class="built_in">sizeof</span>(callbacks));</span><br><span class="line"></span><br><span class="line">    jvmti-&gt;<span class="built_in">SetEventNotificationMode</span>(JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, <span class="literal">nullptr</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> JNI_VERSION_1_8;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>妈的红温了，不想写了(ctrl+z撤销没了)，给个流程图你感受感受</p>
+</blockquote>
+<img src="https://www.gravizo.com/svg?@startuml;(*)%20--%3E%20%20%20if%20%22classLoad%22%20then;%20%20--%3E[true]%20%22classFileHook%22;%20%20if%20%22transformClass%22%20then;%20%20%20%20--%3E[true]%20%22redfineclass%22%20as%20a3;%20%20else;%20%20%20%20--%3E[false]%20%22return%20orignal%20classBytes%22;%20%20endif;else;%20%20-%3E[false]%20%22class%20verify%20error%22;endif;a3%20--%3E%20if%20%22%22%20then;%20%20--%3E[true]%20%22reloadClass%22;else;%20%20--%3E%20[false]%20%22return%20orignal%20classBytes%22;endif;@enduml">
+<h1 id="jni-function-hook"><a class="markdownIt-Anchor" href="#jni-function-hook"></a> jni function hook</h1>
+<blockquote>
+<p>自己感受下，我没话讲了</p>
+</blockquote>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">redirectMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// hook register</span></span><br><span class="line">    jniNativeInterface *redirected_jni_Functions;</span><br><span class="line">    jvmti-&gt;<span class="built_in">GetJNIFunctionTable</span>(&amp;redirected_jni_Functions);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ** hook jni method start **</span></span><br><span class="line"></span><br><span class="line">	redirected_jni_Functions-&gt;CallStaticVoidMethod = &amp;CallStaticVoidMethodHook;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// ** hook jni method end **</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//设置钩子</span></span><br><span class="line">    jvmti-&gt;<span class="built_in">SetJNIFunctionTable</span>(redirected_jni_Functions);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
@@ -252,7 +186,7 @@ driver.get(<span class="string">&quot;https://www.bing.com/&quot;</span>)
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/" rel="tag">软件测试</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java%E9%AD%94%E6%B3%95/" rel="tag">Java魔法</a></li></ul>
 
 
     </footer>
@@ -261,35 +195,19 @@ driver.get(<span class="string">&quot;https://www.bing.com/&quot;</span>)
     
   <nav id="article-nav" class="wow fadeInUp">
     
-      <div class="article-nav-link-wrap article-nav-link-left">
-        
-          
-          
-            <img data-src="https://pic.imgdb.cn/item/666059e45e6d1bfa05c0a5a3.webp" data-sizes="auto" alt="P1217 筛法" class="lazyload">
-          
-        
-        <a href="/2024/06/03/PRIME/"></a>
-        <div class="article-nav-caption">前一篇</div>
-        <h3 class="article-nav-title">
-          
-            P1217 筛法
-          
-        </h3>
-      </div>
-    
     
     <div class="article-nav-link-wrap article-nav-link-right">
       
         
         
-          <img data-src="https://pic.imgdb.cn/item/666059995e6d1bfa05c05afb.png" data-sizes="auto" alt="Selenium Java环境配置" class="lazyload">
+          <img data-src="https://pic.imgdb.cn/item/666059e45e6d1bfa05c0a5a3.webp" data-sizes="auto" alt="愤怒的牛" class="lazyload">
         
       
-      <a href="/2024/06/03/SELENIUM_JAVA/"></a>
+      <a href="/2024/06/05/ANGRY_COW/"></a>
       <div class="article-nav-caption">后一篇</div>
       <h3 class="article-nav-title">
         
-          Selenium Java环境配置
+          愤怒的牛
         
       </h3>
     </div>
@@ -314,7 +232,7 @@ driver.get(<span class="string">&quot;https://www.bing.com/&quot;</span>)
   <h3 class="toc-title">文章目录</h3>
   <div class="sidebar-toc-wrapper toc-div-class" >
       
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E6%8F%90"><span class="toc-number">1.</span> <span class="toc-text"> 前提</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E9%A9%B1%E5%8A%A8"><span class="toc-number">2.</span> <span class="toc-text"> 下载驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%A9%B1%E5%8A%A8"><span class="toc-number">3.</span> <span class="toc-text"> 安装驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E9%A9%B1%E5%8A%A8"><span class="toc-number">4.</span> <span class="toc-text"> 配置驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEpycharm%E7%8E%AF%E5%A2%83"><span class="toc-number">5.</span> <span class="toc-text"> 配置pycharm环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8"><span class="toc-number">6.</span> <span class="toc-text"> 测试驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E4%BF%AE%E5%A4%8D"><span class="toc-number">7.</span> <span class="toc-text"> 错误修复</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text"> 介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#classtransformer"><span class="toc-number">2.</span> <span class="toc-text"> ClassTransformer</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#jni-function-hook"><span class="toc-number">3.</span> <span class="toc-text"> jni function hook</span></a></li></ol>
       
   </div>
 </div>
@@ -425,7 +343,7 @@ driver.get(<span class="string">&quot;https://www.bing.com/&quot;</span>)
   <h3 class="toc-title">文章目录</h3>
   <div class="sidebar-toc-wrapper toc-div-class" >
       
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E6%8F%90"><span class="toc-number">1.</span> <span class="toc-text"> 前提</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E9%A9%B1%E5%8A%A8"><span class="toc-number">2.</span> <span class="toc-text"> 下载驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%A9%B1%E5%8A%A8"><span class="toc-number">3.</span> <span class="toc-text"> 安装驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E9%A9%B1%E5%8A%A8"><span class="toc-number">4.</span> <span class="toc-text"> 配置驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEpycharm%E7%8E%AF%E5%A2%83"><span class="toc-number">5.</span> <span class="toc-text"> 配置pycharm环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8"><span class="toc-number">6.</span> <span class="toc-text"> 测试驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E4%BF%AE%E5%A4%8D"><span class="toc-number">7.</span> <span class="toc-text"> 错误修复</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text"> 介绍</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#classtransformer"><span class="toc-number">2.</span> <span class="toc-text"> ClassTransformer</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#jni-function-hook"><span class="toc-number">3.</span> <span class="toc-text"> jni function hook</span></a></li></ol>
       
   </div>
 </div>
