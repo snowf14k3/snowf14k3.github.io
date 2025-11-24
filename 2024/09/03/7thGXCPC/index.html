@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GXCPC-2024-游记 | snowflak3的小博客</title><meta name="author" content="snowflak3"><meta name="copyright" content="snowflak3"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面   补题时间比较晚，摆烂了一段时间。。。   大一废物的我，第一场 XCPC 之旅，前往广西师范大学（哈哈 我的梦中情校）    由于是弱校，只有个铜牌，当做经验吧。 比赛过程   本人因经验较少，充当读题的角色（也算躺了），提供几个题目的思路。   L题 Loong 一开始因为没有读题完整，导致L题 WA一次 ,给队友增加罚时 , 原因是要查找 输入$N$年之后的龙年，读成$N$年最近">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GXCPC-2024-游记">
+<meta property="og:url" content="http://blog.snowflak3.icu/2024/09/03/7thGXCPC/index.html">
+<meta property="og:site_name" content="snowflak3的小博客">
+<meta property="og:description" content="写在前面   补题时间比较晚，摆烂了一段时间。。。   大一废物的我，第一场 XCPC 之旅，前往广西师范大学（哈哈 我的梦中情校）    由于是弱校，只有个铜牌，当做经验吧。 比赛过程   本人因经验较少，充当读题的角色（也算躺了），提供几个题目的思路。   L题 Loong 一开始因为没有读题完整，导致L题 WA一次 ,给队友增加罚时 , 原因是要查找 输入$N$年之后的龙年，读成$N$年最近">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.snowflak3.icu/img/avatar.jpg">
+<meta property="article:published_time" content="2024-09-03T05:24:20.000Z">
+<meta property="article:modified_time" content="2025-11-24T14:39:07.653Z">
+<meta property="article:author" content="snowflak3">
+<meta property="article:tag" content="游记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://blog.snowflak3.icu/img/avatar.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "GXCPC-2024-游记",
+  "url": "http://blog.snowflak3.icu/2024/09/03/7thGXCPC/",
+  "image": "http://blog.snowflak3.icu/img/avatar.jpg",
+  "datePublished": "2024-09-03T05:24:20.000Z",
+  "dateModified": "2025-11-24T14:39:07.653Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "snowflak3",
+      "url": "http://blog.snowflak3.icu/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://blog.snowflak3.icu/2024/09/03/7thGXCPC/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+          
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GXCPC-2024-游记',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">snowflak3的小博客</span></a><a class="nav-page-title" href="/"><span class="site-name">GXCPC-2024-游记</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">GXCPC-2024-游记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-03T05:24:20.000Z" title="发表于 2024-09-03 13:24:20">2024-09-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-24T14:39:07.653Z" title="更新于 2025-11-24 22:39:07">2025-11-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%B8%B8%E8%AE%B0/">游记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="写在前面">写在前面</h1>
+<ul>
+<li>
+<p>补题时间比较晚，摆烂了一段时间。。。</p>
+</li>
+<li>
+<p>大一废物的我，第一场 XCPC 之旅，前往广西师范大学（哈哈 我的梦中情校）</p>
+</li>
+</ul>
+<p><img src="/2024/09/03/7thGXCPC/1.png" alt="1"></p>
+<p>由于是弱校，只有个铜牌，当做经验吧。</p>
+<h1 id="比赛过程">比赛过程</h1>
+<ol>
+<li>
+<p>本人因经验较少，充当读题的角色（也算躺了），提供几个题目的思路。</p>
+</li>
+<li>
+<p>L题 Loong 一开始因为没有读题完整，导致L题 WA一次 ,给队友增加罚时 , 原因是要查找 输入$N$年之后的龙年，读成$N$年最近的龙年(包括前后的最近)</p>
+</li>
+</ol>
+<p><img src="/2024/09/03/7thGXCPC/2.png" alt="2"></p>
+<ol start="3">
+<li>
+<p>接下来做的是 B 题 Black Friday，相较于 L题 较为简单，一样是签到题，所以是一次过了。这里就不多说了。</p>
+</li>
+<li>
+<p>再下来是E题Epsilon Estuary，我和另外一个队友读题，发现一样是模拟+贪心，只需要逮着 血量最大的史莱姆 模拟操作即可，但是在编写代码中，while的判断条件写成了 while(health) ，这样会导致 health &lt; 0 导致无限循环，然后不出意外的 TLE 了，为下图中的 while(big) 处</p>
+</li>
+</ol>
+<p><img src="/2024/09/03/7thGXCPC/3.png" alt="3"></p>
+<ol start="5">
+<li>
+<p>接下来做F题 Farewell GXCPC 时，我和队友读题发现有点类似背包问题，可能是没有注意到 数据量，在每次处理数据的时候，都进行一次dp操作，导致了TLE，后来提出在操作用例前进行dp操作，读取区间即可。但是还是 WA了5次</p>
+</li>
+<li>
+<p>J 题Judge System with Random 可能是本场比赛的转折点了，到这就断层了（），罚时如果少，且A了这一题，可以拿到银牌了（），也许是我第一次参加这个比赛，不知道这个罚时的规则，看了多次的题目都没有看懂这个题。但是只有队长看懂了。他是选择了二分，当时我没有反应过来（哭了）。用二分查找那个边界，拿到二分的有边界 $r$ ，则可以得到答案，但是因为卡了一小时也没再看题目，也许是少了 $pow(2,n+m) % mod$，导致一直WA，这就是队长当时了思路（估计）。下次还是得多看题目，不能因为搞懂大概题意就一直做题，要适当的回归题目本身。</p>
+</li>
+<li>
+<p>然后就一直在试J题，直到比赛结束（）,然后大败而归</p>
+</li>
+</ol>
+<h1 id="结果">结果</h1>
+<ul>
+<li>这里是比赛得到的气球呜呜呜（没把牌子拿回去）</li>
+</ul>
+<p><img src="/2024/09/03/7thGXCPC/4.png" alt="4"></p>
+<ul>
+<li>奖牌</li>
+</ul>
+<p><img src="/2024/09/03/7thGXCPC/5.png" alt="5"></p>
+<h1 id="补题时间">补题时间</h1>
+<h2 id="L-Loong">L Loong</h2>
+<p>大概思路就是，先打表通过 2024 年 $-12$ or $+12$标记龙年，在用循环访问数组直到数组数值为龙年，输出$i$的位置即可，代码就直接用java写吧，后面基本都是用cpp写的代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// 2024 loong</span></span><br><span class="line">        <span class="type">int</span>[] arr = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">10006</span>];</span><br><span class="line">        <span class="type">int</span> <span class="variable">y</span> <span class="operator">=</span> <span class="number">2024</span>;</span><br><span class="line">        <span class="keyword">while</span> (y &lt;= <span class="number">10004</span>) &#123;</span><br><span class="line">            arr[y] = <span class="number">1</span>;</span><br><span class="line">            y += <span class="number">12</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        y = <span class="number">2024</span>;</span><br><span class="line">        <span class="keyword">while</span> (y &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            arr[y] = <span class="number">1</span>;</span><br><span class="line">            y -= <span class="number">12</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">Scanner</span> <span class="variable">sr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(System.in);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> sr.nextInt() + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (arr[idx] != <span class="number">1</span>) idx++;</span><br><span class="line">        System.out.println(idx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="B-Black-Friday">B Black Friday</h2>
+<p>大概题意就是，输入 a b两个数值 计算，Eva所能接受的打折的游戏，直接循环</p>
+<p>计算每个游戏的 $rate=\frac{p_i-q_i}{p_i}$ 。</p>
+<p>如果 $rate \ge \frac{a}{b}$ 累加结果并输出即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.StreamTokenizer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="type">StreamTokenizer</span> <span class="variable">st</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StreamTokenizer</span>(System.in);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">nextInt</span><span class="params">()</span> <span class="keyword">throws</span> IOException&#123;</span><br><span class="line">        st.nextToken();</span><br><span class="line">        <span class="keyword">return</span> (<span class="type">int</span>)st.nval;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException&#123;</span><br><span class="line">        <span class="comment">// n games</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nextInt();</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> nextInt();</span><br><span class="line">        <span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> nextInt();</span><br><span class="line"></span><br><span class="line">        <span class="type">double</span> <span class="variable">accept</span> <span class="operator">=</span> (<span class="type">double</span>)a / b;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">p</span> <span class="operator">=</span> nextInt();</span><br><span class="line">            <span class="type">int</span> <span class="variable">q</span> <span class="operator">=</span> nextInt();</span><br><span class="line">            <span class="type">double</span> <span class="variable">rate</span> <span class="operator">=</span> (<span class="type">double</span>)(p - q) / p;</span><br><span class="line">            <span class="keyword">if</span> (rate &gt;= accept) &#123;</span><br><span class="line">                sum += q;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(sum);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="E-Epsilon-Estuary">E Epsilon Estuary</h2>
+<p>每次攻击 $n$个史莱姆，每个史莱姆会分裂出 $\left \lfloor \frac{x}{2}  \right \rfloor$和 $\left \lceil \frac{x}{2} \right \rceil$，我们每次选择最大血量的史莱姆攻击即可，累加攻击次数，即可得到结果，时间复杂度为 $O(n logn)$</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ll long long</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">solve</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    ll y; <span class="comment">// y is dameage</span></span><br><span class="line">    </span><br><span class="line">    cin &gt;&gt; n &gt;&gt; y;</span><br><span class="line">    </span><br><span class="line">    ll big = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i =<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        ll v;</span><br><span class="line">        cin &gt;&gt; v;</span><br><span class="line">        <span class="keyword">if</span>(v &gt; big) big = v;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ll cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (big &gt; <span class="number">0</span>)&#123;</span><br><span class="line">        big = big - y;</span><br><span class="line">        big = <span class="built_in">ceil</span>(big / <span class="number">2.0</span>);</span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    cout &lt;&lt; cnt &lt;&lt; <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    ios::<span class="built_in">sync_with_stdio</span>(<span class="literal">false</span>);</span><br><span class="line">    cin.<span class="built_in">tie</span>(<span class="number">0</span>),cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="type">int</span> t;</span><br><span class="line">    cin &gt;&gt; t;</span><br><span class="line">    <span class="keyword">while</span>(t--) <span class="built_in">solve</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="F-FareWell-GXCPC">F FareWell GXCPC</h2>
+<p>很明显是一个背包的问题，建立dp表，把5000内的情况全部考虑，再预处理区间的最大值，最后输出结果就可以了</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> MAXN = <span class="number">5e3</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n,q;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    cin &gt;&gt; n &gt;&gt; q;</span><br><span class="line">    </span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">dp</span><span class="params">(MAXN<span class="number">+1</span>,<span class="number">-0x3f3f3f</span>)</span></span>;</span><br><span class="line">    dp[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 建立dp表，把5000内的情况全部考虑</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        <span class="type">int</span> d,f;</span><br><span class="line">        cin &gt;&gt; d &gt;&gt; f;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j = MAXN;j&gt;=d;j--) dp[j] = <span class="built_in">max</span>(dp[j],dp[j-d]+f);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历全部区间，找到最大的</span></span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">res</span>(MAXN<span class="number">+1</span>,<span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(MAXN<span class="number">+1</span>,<span class="number">-1</span>));</span><br><span class="line">    <span class="comment">// cache data</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span> ;i&lt;=MAXN;i++) </span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j = i ;j&lt;=MAXN;j++) </span><br><span class="line">            res[i][j] = <span class="built_in">max</span>(res[i][j<span class="number">-1</span>],dp[j]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输出区间</span></span><br><span class="line">    <span class="keyword">while</span>(q--) &#123;</span><br><span class="line">        <span class="type">int</span> l ,r;</span><br><span class="line">        cin &gt;&gt; l &gt;&gt; r;</span><br><span class="line"></span><br><span class="line">        cout &lt;&lt; res[l][r] &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="J-Judge-System-with-Random">J Judge System with Random</h2>
+<ul>
+<li>
+<p>大概题意是： Colin 和 Eva 对比罚时，谁小谁赢，输入的时候对数据进行处理</p>
+</li>
+<li>
+<p>for(int i =0;i&lt;n;i++) cin &gt;&gt; x[i]; x[i] += 20 * i;</p>
+</li>
+<li>
+<p>i为0的时候就是第一次提交成功，往下就是提交失败的，加上罚时，不难发现 提交的时间是 单调上升的，那么说明结果也是同样的，会存在一个边界，找到那个边界的 右 r ，带入 pow(2, r)，使用快速幂即可计算得到结果</p>
+</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ll long long</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">1e5</span> + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">x</span><span class="params">(N,<span class="number">0</span>)</span></span>;</span><br><span class="line"><span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">y</span><span class="params">(N<span class="number">+1</span>,<span class="number">0</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n,m;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">qpow</span><span class="params">(ll a, ll b, ll m)</span> </span>&#123;</span><br><span class="line">  a %= m;</span><br><span class="line">  ll res = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">while</span> (b &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (b &amp; <span class="number">1</span>) res = res * a % m;</span><br><span class="line">    a = a * a % m;</span><br><span class="line">    b &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">cmp</span><span class="params">(<span class="type">const</span> <span class="type">int</span>&amp; x, <span class="type">const</span> <span class="type">int</span>&amp; y)</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> x &lt;= y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> mod= <span class="number">998244353</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i =<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        cin &gt;&gt; x[i];</span><br><span class="line">        x[i] += <span class="number">20</span> * i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; m; i++)&#123;</span><br><span class="line">        cin &gt;&gt; y[i];</span><br><span class="line">        y[i] += <span class="number">20</span> * i;</span><br><span class="line">    &#125;</span><br><span class="line">    y[m] = <span class="number">1e9</span>;</span><br><span class="line">    ll ans = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = n<span class="number">-1</span>;i&gt;=<span class="number">0</span>;i--) &#123;</span><br><span class="line">        <span class="keyword">auto</span> it = <span class="built_in">upper_bound</span>(y.<span class="built_in">begin</span>(),y.<span class="built_in">begin</span>() + m,x[i],cmp);</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> j = <span class="built_in">distance</span>(y.<span class="built_in">begin</span>(),it);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//cout &lt;&lt; i &lt;&lt; &quot; &quot; &lt;&lt; j &lt;&lt; endl;</span></span><br><span class="line">        </span><br><span class="line">        ans += <span class="built_in">qpow</span>(<span class="number">2</span>,(n - i) + (m - j - <span class="number">1</span>) ,mod);</span><br><span class="line">        ans %= mod;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; ans;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="D-Dune">D Dune</h2>
+<ul>
+<li>太菜了，还是不会喵（）</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://blog.snowflak3.icu">snowflak3</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://blog.snowflak3.icu/2024/09/03/7thGXCPC/">http://blog.snowflak3.icu/2024/09/03/7thGXCPC/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://blog.snowflak3.icu" target="_blank">snowflak3的小博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B8%B8%E8%AE%B0/">游记</a></div><div class="post-share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/06/04/scuritymanager/" title="SecurityManager魔法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">SecurityManager魔法</div></div><div class="info-2"><div class="info-item-1">SecurityManager 曾经的我在某一次阅读Java代码的时候，发现了这一个神奇的东西。 让我有了很多圈米的Idea，本文介绍我是如何使用SecurityManager。 因为最近学习高版本Java时发现他要被删除了(555)，想着用这个文章纪念纪念它。 我出生了! 自Java 1.0问世以来，SecurityManager便成为了Java生态系统的一部分。在那个 以Applet为主导的时代，Applet的运行依赖于Web浏览器。用户在浏览含有Applet的网页时， 浏览器会负责下载Applet的字节码，并在用户计算机上运行。通过设置SecurityManager，可以防止Applet访问本地文件系统或网络等敏感资源。 截止今日，你依旧能在各种 第三方库/JDK 源码中看到SecurityManager的身影。 不巧的是SecurityManager在JDK17已经被标识弃用。当你使用它的时候会警告用户 未来版本将删除 SecurityManager。 为了方便，本文章使用JDK1.8进行，且只介绍非正常用法 非正常用法 这边只介绍...</div></div></div></a><a class="pagination-related" href="/2025/01/02/nightWork/" title="关于解决校园网夜间断网的个人办法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">关于解决校园网夜间断网的个人办法</div></div><div class="info-2"><div class="info-item-1">关于解决校园网夜间断网的个人办法 众所周知，某些校园网为了能够让学生尽快上床睡觉。 发明了夜间12点断网，而且也包括节假日每天限制上网时间段，这就比较搞了。 MWAN 前提   装有openwrt的路由器，带USB(最后3.0)的路由器   装上 MWAN3 插件    实现  配置接口，给usb网卡，分配网管度量值 2，我这里 wan 是 1    添加两个接口，这里用 dns的ip，检测接口是否掉线    创建成员，度量 权重全都给 1，我这里两个网都是同一个运营商，实现带宽的叠加(似乎没啥用 悲 唯一用处就是 手机套餐每个月不会白费不用)    策略随便分配就可以了，重点还是讲这个 规则，由于12点后断网，路由器不添加规则，就无法访问到内网服务   但是奇怪的是，不知道为什么下面的子设备无法访问，只有路由器可以访问（不太懂喵~ 所以我这里，使用的 nginx 反向代理，让宿舍的设备能在12点后能用到内网中自己搭建的服务。 不是很懂喵~，这里似乎也没什么更好的解决方案了，防火墙也搞不懂捏（纯属菜就是了 。  IPV6 众所周知啊~ ，...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/05/20/xcpc2025/" title="XCPC-2025-游寄"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-20</div><div class="info-item-2">XCPC-2025-游寄</div></div><div class="info-2"><div class="info-item-1">5.9 东拼西凑了一套题目哎，随便应付了一下校赛出题，过了相对一个失败的人生。。。。。。 不过这次校选拔赛也算是学校的第一次正常题目,正常数据（不再是水数据，直接输出样例就能通过的题目。。。。 第一次使用 codeforces polygon ， 也是大概搞懂了正规校赛的标准题面pdf都是怎么出的了~ 由于学校的奇葩规定，必须要在校赛名单里有名字，能报销名额和公假。 所以。。。凑水题人，也参与了校赛（自己写自己凑出来的题，这好像没什么毛病啊  5.11 学校经费还是非常有限，是弱弱弱校啊悲，终于是选出了惊人的 2 队，选去比赛哎~ 忘记了平时都是在干嘛，那一段时间基本都是在集训室写题，和队友一起写别的省赛的题目。。。。。 搞不明白为什么 gxcpc 挂的ccpc 标，却要使用英文题面，领先业界 100 年啊 oh no  5.19-5.23 学校经费据说是有限，但是指导老师硬着头皮，订了协约酒店里最贵的那一个，也是非常的豪横了 悲（申报还要我跑来跑去 22...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">snowflak3</div><div class="author-info-description">爱发些无营养的文章</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/snowf14k3"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/snowf14k3" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%AF%94%E8%B5%9B%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">比赛过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C"><span class="toc-number">3.</span> <span class="toc-text">结果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A1%A5%E9%A2%98%E6%97%B6%E9%97%B4"><span class="toc-number">4.</span> <span class="toc-text">补题时间</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#L-Loong"><span class="toc-number">4.1.</span> <span class="toc-text">L Loong</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#B-Black-Friday"><span class="toc-number">4.2.</span> <span class="toc-text">B Black Friday</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#E-Epsilon-Estuary"><span class="toc-number">4.3.</span> <span class="toc-text">E Epsilon Estuary</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#F-FareWell-GXCPC"><span class="toc-number">4.4.</span> <span class="toc-text">F FareWell GXCPC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#J-Judge-System-with-Random"><span class="toc-number">4.5.</span> <span class="toc-text">J Judge System with Random</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#D-Dune"><span class="toc-number">4.6.</span> <span class="toc-text">D Dune</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By snowflak3</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.3</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
