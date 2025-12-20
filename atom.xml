@@ -5,7 +5,7 @@
   <link href="https://blog.snowflak3.icu/" rel="alternate" type="text/html"/>
   <link href="https://blog.snowflak3.icu/atom.xml" rel="self" type="application/atom+xml"/>
   <id>https://blog.snowflak3.icu/</id>
-  <updated>2025-12-20T12:16:00.799Z</updated>
+  <updated>2025-12-20T14:08:32.174Z</updated>
   <language>zh_CN</language>
   <entry>
     <title>XCPC-2025-游寄</title>
@@ -304,9 +304,79 @@ function bootstrap(jni, jvmti) {
 </ul>
 <p>总之,ZKM的检测分为 <code>加载阶段</code> 和 <code>混淆阶段</code>. 后者本人没有深入调试,具体流程也不得而知.</p>
 <h1>反Javaagent检测</h1>
-<p>这玩意写在了ZKM的 static 方法内,通过破坏加密后des字符串,导致解密失败(挺妙的)</p>
-<p>我们可以直接对 <code>RuntimeMXBean</code> 类中的 <code>getInputArguments</code> 进行特征删除字符串.</p>
-<p>此外还有一个我个人没有调试出来,其被检测到后会在Flow混淆后也会提示栈堆不平衡,这个检测非<code>getInputArguments</code>调用.</p>
+<p>这玩意写在了ZKM的数值初始化 static 方法内,要绕过这个检测我们可以通过破坏加密后des字符串让他解密失败</p>
+<p>实现检测不到正确的检测 虚拟机 参数，如下，比如</p>
+<p>它通常存在于 每个类中的static的这个初始化获取类的Key值的这个类中的 某个 方法里。</p>
+<pre><code>static {
+    v0 = var1_1 = u22.a(-8425532214920198678L, -5751268713453691846L, MethodHandles.lookup().lookupClass()).a(155055646340681L) ^ ZKM.a ^ 133041716194123L;
+}
+</code></pre>
+<p>这里我们就是 <code>u22</code> ，下面是它的检测是写在 private static void a0（目前看来应该名称都是叫a0）</p>
+<pre><code>switch (v0) {
+    case 0: {
+        var0 = Class.forName(new String(var1_9));
+        continue block16;
+    }
+    case 1: {
+        v0 = 2;
+        v1 = "I$8\u0012tn\u0015\u0007S\u000e66k\u0000ZLg\u000b\u0018XQo`|e\u001f?!\fF\u0018;\u0004l\u0003'\u0014e";
+        continue block19;
+    }
+    case 2: {
+        var3_2 = ((List)Class.forName(var4_1).getMethod(var4_1, new Class[]{Class.class}).invoke(null, new Object[]{var0})).get(0);
+        continue block17;
+    }
+    case 3: {
+        var5_3 = var4_1;
+        v0 = 4;
+        v1 = "\u000e\u001d*\u00168w\u0013";
+        continue block19;
+    }
+    case 4: {
+        var6_4 = var4_1;
+        v0 = 5;
+        v1 = "\u000e\u001d&lt;\u00064h\u0010\u001eD";
+        continue block19;
+    }
+    case 5: {
+        var7_5 = var4_1;
+        v0 = 6;
+        v1 = "\u000e$)\u00164v\u0018\u0000V\u001a13r\u0011";
+        continue block19;
+    }
+    case 6: {
+        var8_6 = var4_1;
+        v0 = 7;
+        v1 = "\u000e$)\u00164v\u0004\b@Ha";
+        continue block19;
+    }
+    case 7: {
+        var9_7 = var4_1;
+        v0 = 8;
+        v1 = "\u000e//\u0005;c\u0013\fZTa";
+        continue block19;
+    }
+}
+var10_8 = var4_1;
+v5 = ((Collection)var0.getMethod(var5_3, new Class[0]).invoke(var3_2, new Object[0])).iterator();
+</code></pre>
+<p>要想解决这个调试我们可以直接，通过字节码修改：</p>
+<pre><code>if (classNode.name.contains("com/zelix/u22")) {
+    if (methodNode.name.equals("a0")) {
+        // 把他们的字符改为空白符，他们就无法解密了
+        // 这里保证了这整个类有的字符串全是要检测的参数的密文
+        for (AbstractInsnNode insnNode : methodNode.instructions.toArray()) {
+            if (insnNode instanceof LdcInsnNode &amp;&amp; ((LdcInsnNode) insnNode).cst instanceof String) ((LdcInsnNode) insnNode).cst = "132";
+        }
+    }
+}
+</code></pre>
+<p>（造成堆栈不平衡的问题一般都是运行到某个方法触发异常，导致没法把堆栈添加到list中）</p>
+<p>这里其中的一个可能会导致出现这个问题的是：</p>
+<pre><code>System.setProperty("java.class.path", "ZKM.jar");
+</code></pre>
+<p>我们必须得让这个 class path 为 ZKM.jar。</p>
+<p>此外还有几个个我个人没有出来,其被检测到后会在Flow混淆后也会提示栈堆不平衡的神秘问题。</p>
 <p>目前没定位出来,不会有任何提示捏.</p>
 <h1>思路方法</h1>
 <p>不难发现，对应的加密类型 例如: 字符串 整数型 长整数型 加密都通过indy来获得,且解密函数都是当前的类里</p>
