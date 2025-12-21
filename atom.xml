@@ -5,7 +5,7 @@
   <link href="https://blog.snowflak3.icu/" rel="alternate" type="text/html"/>
   <link href="https://blog.snowflak3.icu/atom.xml" rel="self" type="application/atom+xml"/>
   <id>https://blog.snowflak3.icu/</id>
-  <updated>2025-12-21T06:30:50.575Z</updated>
+  <updated>2025-12-21T11:14:59.492Z</updated>
   <language>zh_CN</language>
   <entry>
     <title>XCPC-2025-游寄</title>
@@ -305,7 +305,7 @@ function bootstrap(jni, jvmti) {
 <p>总之,ZKM的检测分为 <code>加载阶段</code> 和 <code>混淆阶段</code>. 后者本人没有深入调试,具体流程也不得而知.</p>
 <h1>反Javaagent检测</h1>
 <p>这玩意写在了ZKM的数值初始化 static 方法内,要绕过这个检测我们可以通过破坏加密后des字符串让他解密失败</p>
-<p>实现检测不到正确的检测 虚拟机 参数，如下，比如</p>
+<p>实现检测不到正确的检测 虚拟机 参数，如下</p>
 <p>它通常存在于 每个类中的static的这个初始化获取类的Key值的这个类中的 某个 方法里。</p>
 <pre><code>static {
     v0 = var1_1 = u22.a(-8425532214920198678L, -5751268713453691846L, MethodHandles.lookup().lookupClass()).a(155055646340681L) ^ ZKM.a ^ 133041716194123L;
@@ -376,7 +376,7 @@ v5 = ((Collection)var0.getMethod(var5_3, new Class[0]).invoke(var3_2, new Object
 <pre><code>System.setProperty("java.class.path", "ZKM.jar");
 </code></pre>
 <p>我们必须得让这个 class path 为 ZKM.jar。</p>
-<p>此外还有几个个我个人没有出来,其被检测到后会在Flow混淆后也会提示栈堆不平衡的神秘问题。</p>
+<p>此外还有几个我调没有出来,其被检测到后会在Flow混淆后也会提示栈堆不平衡的神秘问题。</p>
 <p>目前没定位出来,不会有任何提示捏.</p>
 <h1>思路方法</h1>
 <p>不难发现，对应的加密类型 例如: 字符串 整数型 长整数型 加密都通过indy来获得,且解密函数都是当前的类里</p>

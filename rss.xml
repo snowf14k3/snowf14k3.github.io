@@ -263,7 +263,7 @@ function bootstrap(jni, jvmti) {
 &lt;p&gt;总之,ZKM的检测分为 &lt;code&gt;加载阶段&lt;/code&gt; 和 &lt;code&gt;混淆阶段&lt;/code&gt;. 后者本人没有深入调试,具体流程也不得而知.&lt;/p&gt;
 &lt;h1&gt;反Javaagent检测&lt;/h1&gt;
 &lt;p&gt;这玩意写在了ZKM的数值初始化 static 方法内,要绕过这个检测我们可以通过破坏加密后des字符串让他解密失败&lt;/p&gt;
-&lt;p&gt;实现检测不到正确的检测 虚拟机 参数，如下，比如&lt;/p&gt;
+&lt;p&gt;实现检测不到正确的检测 虚拟机 参数，如下&lt;/p&gt;
 &lt;p&gt;它通常存在于 每个类中的static的这个初始化获取类的Key值的这个类中的 某个 方法里。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;static {
     v0 = var1_1 = u22.a(-8425532214920198678L, -5751268713453691846L, MethodHandles.lookup().lookupClass()).a(155055646340681L) ^ ZKM.a ^ 133041716194123L;
@@ -334,7 +334,7 @@ v5 = ((Collection)var0.getMethod(var5_3, new Class[0]).invoke(var3_2, new Object
 &lt;pre&gt;&lt;code&gt;System.setProperty(&quot;java.class.path&quot;, &quot;ZKM.jar&quot;);
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;我们必须得让这个 class path 为 ZKM.jar。&lt;/p&gt;
-&lt;p&gt;此外还有几个个我个人没有出来,其被检测到后会在Flow混淆后也会提示栈堆不平衡的神秘问题。&lt;/p&gt;
+&lt;p&gt;此外还有几个我调没有出来,其被检测到后会在Flow混淆后也会提示栈堆不平衡的神秘问题。&lt;/p&gt;
 &lt;p&gt;目前没定位出来,不会有任何提示捏.&lt;/p&gt;
 &lt;h1&gt;思路方法&lt;/h1&gt;
 &lt;p&gt;不难发现，对应的加密类型 例如: 字符串 整数型 长整数型 加密都通过indy来获得,且解密函数都是当前的类里&lt;/p&gt;
