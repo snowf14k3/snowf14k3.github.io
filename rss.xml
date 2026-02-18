@@ -1,4 +1,343 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>snowflake的博客</title><description>baka</description><link>https://blog.cutebaka.cloud/</link><language>zh_CN</language><item><title>HOJ二次开发-扩展功能</title><link>https://blog.cutebaka.cloud/posts/hoj/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/hoj/</guid><description>基于nginx反向代理(应该是只支持单体部署),但是好处就是不用碰Java</description><pubDate>Thu, 05 Feb 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>snowflake的博客</title><description>baka</description><link>https://blog.cutebaka.cloud/</link><language>zh_CN</language><item><title>jnic转化代码分析</title><link>https://blog.cutebaka.cloud/posts/jnic/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/jnic/</guid><pubDate>Wed, 18 Feb 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
+&lt;p&gt;:::note
+曾经也是jnic正版用户，但是由于jnic的更新太慢了，150英镑的昂贵价格让人望而却步。
+jnic还有授权次数限制，次数限制一旦没有就无法再次授权新设备。
+:::&lt;/p&gt;
+&lt;p&gt;有个myj2c的混淆，通过魔改&lt;code&gt;native-obfuscator&lt;/code&gt;的逻辑来实现和 &lt;code&gt;jnic&lt;/code&gt; 一致是性能和效果&lt;/p&gt;
+&lt;p&gt;::github{repo=&quot;radioegor146/native-obfuscator&quot;}&lt;/p&gt;
+&lt;p&gt;这里面也包括 chacha20 和一模一样的缓存技术,但是却丢失了&lt;code&gt;flow&lt;/code&gt;的功能。&lt;/p&gt;
+&lt;p&gt;:::note
+但是这个myj2c的混淆名声不是很好，因为其中藏有后门，利用LZMA将无混native的class一同打包进.dat文件中
+:::&lt;/p&gt;
+&lt;p&gt;由于太无聊，这次看看jnic的3.7.0生成的代码都有什么新变化，&lt;s&gt;希望这篇文章不会被dmca&lt;/s&gt;&lt;/p&gt;
+&lt;h1&gt;配置&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/1.CC3Ur29K_3rQxV.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h1&gt;字符串混淆&lt;/h1&gt;
+&lt;p&gt;新版本将原来的哈希&lt;code&gt;SHA-256&lt;/code&gt;升级为&lt;code&gt;SHA-512&lt;/code&gt;，增加了数字签名&lt;code&gt;Ed25519&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;但是似乎字符串加密并没有什么变化。&lt;/p&gt;
+&lt;p&gt;唯一区别就是JNI_ONLOAD的&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;jnic_buf = (*env)-&amp;gt;GetDirectBufferAddress(env, buf);
+struct chacha20_context c;
+chacha20_init_context(&amp;amp;c, key, jnic_buf + 32, 0);
+chacha20_write_stream(&amp;amp;c, jnic_buf, 1681);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;变为&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint8_t *java_buf = (*env)-&amp;gt;GetDirectBufferAddress(env, buf);
+struct chacha20_context c;
+chacha20_init_context(&amp;amp;c, key, java_buf + 32, 0);
+jnic_buf = malloc(2564);
+chacha20_write_stream(&amp;amp;c, jnic_buf, 2564);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;依旧没法避免 jni hook 得到这个buf（&lt;/p&gt;
+&lt;p&gt;对应更新：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Improved memory efficiency of loader&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;新功能useIntrinsics&lt;/h1&gt;
+&lt;p&gt;内部优化，根据官网的文档的话，那就是&lt;/p&gt;
+&lt;p&gt;该选项允许JNIC将特定Java API方法的调用替换为手工编写的最优代码。&lt;/p&gt;
+&lt;p&gt;除了能够提升性能外，这种方式还能防止在JVM层面对这些方法调用进行插桩检测，&lt;/p&gt;
+&lt;p&gt;从而增加逆向工程的难度。支持优化的方法包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;java.lang.Object.getClass()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;java.lang.String.equals(java.lang.Object)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;java.lang.String.isEmpty()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;java.lang.String.length()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;若未指定该选项，默认值为 false（禁用状态）。&lt;/p&gt;
+&lt;h2&gt;String.equals&lt;/h2&gt;
+&lt;p&gt;实际上就是把 原来的CallBooleanMethod直接替换成一整块的代码块&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;未优化实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;// c_27id_7 -&amp;gt;  equals
+stack0.i = (*env)-&amp;gt;CallBooleanMethod(env，stack0.1, c_27id_7(env)，stack1.l);
+if ((*env)-&amp;gt;ExceptionCheck(env)){
+  return;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;优化后实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;// stack0.i 就相当于返回equals的结果
+if (stack1.l == NULL) stack0.i = 0;
+else if ((*env)-&amp;gt;IsSameObject(env, stack0.l, stack1.l)) stack0.i = 1; 
+else if (!(*env)-&amp;gt;IsInstanceOf(env, stack1.l, c_27(env))) stack0.i = 0;
+else {
+  jsize l = (*env)-&amp;gt;GetStringLength(env, stack0.l);
+  if (l != (*env)-&amp;gt;GetStringLength(env, stack1.l)) stack0.i = 0;
+  else {            
+    const jchar *s1 = (*env)-&amp;gt;GetStringCritical(env, stack0.l, NULL);
+    const jchar *s2 = (*env)-&amp;gt;GetStringCritical(env, stack1.l, NULL);
+    jboolean r = 1;
+    for (jsize i = 0; i &amp;lt; l; ++i) {
+        if (s1[i] != s2[i]) { r = 0; break; }
+    }            
+    (*env)-&amp;gt;ReleaseStringCritical(env, stack1.l, s2);
+    (*env)-&amp;gt;ReleaseStringCritical(env, stack0.l, s1);
+    stack0.i = r;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;String.length&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;未优化实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;stack2.l = local1.l;
+stack2.i = (*env)-&amp;gt;CallIntMethod(env, stack2.l, c_4id_2(env));
+if ((*env)-&amp;gt;ExceptionCheck(env)) {
+  return;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;优化后实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;stack2.l = local1.l;
+stack2.i = (*env)-&amp;gt;GetStringLength(env, stack2.l);
+if ((*env)-&amp;gt;ExceptionCheck(env)) {
+  return;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;实际上，我们依旧可以通过Hook GetStringLength 来得到这个字符串的长度以及内容&lt;/p&gt;
+&lt;h2&gt;String.isEmpty&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;优化前实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;stack2.l = local3.l;
+stack2.i = (*env)-&amp;gt;CallBooleanMethod(env, stack2.l, c_4id_1(env));
+if ((*env)-&amp;gt;ExceptionCheck(env)) {
+    return;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;优化后实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;stack2.l = local3.l;
+stack2.i = (*env)-&amp;gt;GetStringLength(env, stack2.l) == 0;
+if ((*env)-&amp;gt;ExceptionCheck(env)) {
+  return;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;实际上就是获取长度，判断它的长度是否为0，和前面的length依旧可以进行hook&lt;/p&gt;
+&lt;h2&gt;Object.getClass&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;优化前实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;stack2.l = local1.l;
+stack2.l = (*env)-&amp;gt;CallObjectMethod(env, stack2.l, c_3id_0(env));
+if ((*env)-&amp;gt;ExceptionCheck(env)) {
+  return;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;优化后实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;stack2.l = local1.l;
+stack2.l = (*env)-&amp;gt;GetObjectClass(env, stack2.l);
+if ((*env)-&amp;gt;ExceptionCheck(env)) {
+  return;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;实现的优化依旧还是在jni的体系中啊（，依旧可以轻松的Hook出来&lt;/p&gt;
+&lt;h1&gt;fastCompile快速编译&lt;/h1&gt;
+&lt;p&gt;由于这个功能没人照做过，但是通过Hook可以复现同款操作（。&lt;/p&gt;
+&lt;p&gt;其输出的是：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;zig cc -fno-sanitize=all -fno-sanitize-trap=all -Os -fno-optimize-sibling-calls -fno-slp-vectorize -target x86_64-windows -std=c11 -fPIC -shared -s -fvisibility=hidden -IC:\Users\xxxx\AppData\Local\Temp\jnic6249051816001900267 -oC:\Users\xxxx\AppData\Local\Temp\jnic6249051816001900267\WINDOWS_X86_64\jnic.jnilib C:\Users\xxxx\AppData\Local\Temp\jnic6249051816001900267\jnic.c
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;根据上面的hook之类输出则可以得到下面的代码&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ZigMultiCompiler {
+  private static final String BASE_DIR = &quot;C:\\Users\\xxxxx\\AppData\\Local\\Temp\\jnic6249051816001900267&quot;;
+  
+  private static final String SOURCE_FILE_NAME = &quot;jnic.c&quot;;
+
+  static class Target {
+    String zigTarget;   // Zig 的 target 
+    String outDirName;  // 输出文件夹名称
+    String ext;         // 文件后缀 ( .jnilib, .so, .dll)
+
+    public Target(String zigTarget, String outDirName, String ext) {
+      this.zigTarget = zigTarget;
+      this.outDirName = outDirName;
+      this.ext = ext;
+    }
+  }
+
+  public static void main(String[] args) {
+    List&amp;lt;Target&amp;gt; targets = new ArrayList&amp;lt;&amp;gt;();
+    
+    // --- Windows ---
+    targets.add(new Target(&quot;x86_64-windows&quot;, &quot;WINDOWS_X86_64&quot;, &quot;.jnilib&quot;));
+    // targets.add(new Target(&quot;x86-windows&quot;,    &quot;WINDOWS_X86&quot;,    &quot;.jnilib&quot;));
+    
+    // --- Linux ---
+    targets.add(new Target(&quot;x86_64-linux-gnu&quot;, &quot;LINUX_X86_64&quot;,   &quot;.so&quot;));
+    // targets.add(new Target(&quot;aarch64-linux-gnu&quot;, &quot;LINUX_ARM64&quot;,    &quot;.so&quot;));
+    
+    targets.add(new Target(&quot;x86_64-macos&quot;,     &quot;MACOS_X86_64&quot;,   &quot;.dylib&quot;));
+    targets.add(new Target(&quot;aarch64-macos&quot;,    &quot;MACOS_ARM64&quot;,    &quot;.dylib&quot;));
+
+    
+    long startTime = System.currentTimeMillis();
+    int successCount = 0;
+
+    for (Target target : targets) {
+      boolean success = compileForTarget(target);
+      if (success) successCount++;
+    }
+
+    long endTime = System.currentTimeMillis();
+    System.out.println(&quot;\n========================================&quot;);
+    System.out.println(String.format(&quot;批量编译完成。成功: %d / %d，耗时: %d ms&quot;, 
+            successCount, targets.size(), (endTime - startTime)));
+  }
+
+  private static boolean compileForTarget(Target target) {
+    String sourcePath = new File(BASE_DIR, SOURCE_FILE_NAME).getAbsolutePath();
+    File outputDir = new File(BASE_DIR, target.outDirName);
+    File outputFile = new File(outputDir, &quot;jnic&quot; + target.ext);
+
+    if (!outputDir.exists()) {
+      outputDir.mkdirs();
+    }
+
+    List&amp;lt;String&amp;gt; command = new ArrayList&amp;lt;&amp;gt;();
+    command.add(&quot;zig&quot;);
+    command.add(&quot;cc&quot;);
+
+    command.add(&quot;-fno-sanitize=all&quot;); // 禁用所有运行时代码清洗/安全检查
+    command.add(&quot;-fno-sanitize-trap=all&quot;); // 防止编译器为未定义行为生成陷阱指令。
+    command.add(&quot;-Os&quot;); // 减小代码体积
+    command.add(&quot;-fno-optimize-sibling-calls&quot;); // 禁用“兄弟调用”
+    command.add(&quot;-fno-slp-vectorize&quot;); // 禁用 SLP
+    command.add(&quot;-std=c11&quot;);
+    command.add(&quot;-fPIC&quot;);
+    command.add(&quot;-shared&quot;);
+    command.add(&quot;-s&quot;); // 删除符号表和调试信息
+    command.add(&quot;-fvisibility=hidden&quot;); // 隐藏符号
+
+    command.add(&quot;-target&quot;);
+    command.add(target.zigTarget);
+    
+    command.add(&quot;-I&quot; + BASE_DIR);
+    command.add(&quot;-o&quot; + outputFile.getAbsolutePath());
+    command.add(sourcePath);
+
+    try {
+      ProcessBuilder pb = new ProcessBuilder(command);
+      pb.directory(new File(BASE_DIR));
+      pb.inheritIO();
+
+      Process process = pb.start();
+      int exitCode = process.waitFor();
+
+      if (exitCode == 0) {
+        System.out.println(&quot;    [OK] 生成文件: &quot; + target.outDirName + File.separator + outputFile.getName());
+        return true;
+      } else {
+        System.err.println(&quot;    [FAIL] 编译失败: &quot; + exitCode);
+        return false;
+      }
+    } catch (IOException | InterruptedException e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;果然这个编译还是太神秘了&lt;/p&gt;
+&lt;h1&gt;缓存&lt;/h1&gt;
+&lt;p&gt;这个应该是对应的更新&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过 CSE 在 JNI ID 缓存上生成的原生代码性能提升 （Improved performance of generated native code with CSE on JNI ID caches）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;struct cached_c_5 {
+  jclass _Atomic clazz;
+  jmethodID id_3;
+  jmethodID id_1;
+  jmethodID id_2;
+  jmethodID id_0;
+};
+static struct cached_c_5* c_5_(JNIEnv *env) {
+  static struct cached_c_5 cache;
+  static atomic_flag lock;
+  if (atomic_load_explicit(&amp;amp;cache.clazz, memory_order_acquire)) return &amp;amp;cache;
+  jclass clazz = (*env)-&amp;gt;FindClass(env, jnic_decrypt((char[]) {60, -104, -28, -42, -8, 73, 11, -111, 48, 79, -26, -75, -119, -90, -67, 94, 108, 31, 102, 6, 52, -120, 10, 0}, 893, 23));
+  while (atomic_flag_test_and_set(&amp;amp;lock)) {}
+  if (!cache.clazz) {
+    cache.id_2 = (*env)-&amp;gt;GetMethodID(env, clazz, jnic_decrypt((char[]) {93, 106, -90, 50, 107, 117, 0}, 916, 6), jnic_decrypt((char[]) {-64, -61, 113, 40, 100, 52, -59, -33, 45, 113, 21, -97, 63, -58, 73, -10, -57, -87, 111, 72, -8, 7, -35, 56, 83, -63, -123, 49, 0}, 922, 28));
+    cache.id_0 = (*env)-&amp;gt;GetMethodID(env, clazz, jnic_decrypt((char[]) {-25, 94, -108, 72, 7, 81, 0}, 950, 6), jnic_decrypt((char[]) {-40, -85, -45, 0}, 956, 3));
+    cache.id_1 = (*env)-&amp;gt;GetMethodID(env, clazz, jnic_decrypt((char[]) {-118, -41, -21, 71, -5, -21, 0}, 959, 6), jnic_decrypt((char[]) {-97, 24, -54, -125, 58, -24, -117, 121, 3, -103, 88, 127, -81, -9, -79, 97, -14, 70, 12, -92, 89, -31, 0, -68, -107, -32, -61, 116, 109, -122, -83, -94, -113, -86, 35, 62, -70, -102, 98, -35, 32, 22, -53, -31, 65, 0}, 965, 45));
+    cache.id_3 = (*env)-&amp;gt;GetMethodID(env, clazz, jnic_decrypt((char[]) {-3, 36, -91, 100, -66, -4, 64, -47, 0}, 1010, 8), jnic_decrypt((char[]) {-97, 83, -23, -37, -99, 70, 51, 72, 47, 30, -118, 56, 23, -69, 49, 60, -117, -12, -84, 6, 0}, 1018, 20));
+    clazz = (*env)-&amp;gt;NewGlobalRef(env, clazz);
+    atomic_store_explicit(&amp;amp;cache.clazz, clazz, memory_order_release);
+  }
+  atomic_flag_clear(&amp;amp;lock);
+  return &amp;amp;cache;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;升级为单独的一个函数&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;__attribute__((const))static jmethodID c_40id_0(JNIEnv *env) {
+  static _Atomic jmethodID id;
+  jmethodID cached = atomic_load_explicit(&amp;amp;id, memory_order_relaxed);
+  if (__builtin_expect(cached != 0, 1)) return cached;
+  jclass clazz = c_40(env);
+  cached = (*env)-&amp;gt;GetMethodID(env, clazz, &quot;&amp;lt;init&amp;gt;&quot;, &quot;(Ljava/lang/String;ILjava/lang/String;)V&quot;);
+  atomic_store_explicit(&amp;amp;id, cached, memory_order_relaxed);
+  return cached;
+}
+__attribute__((const))static jclass c_19(JNIEnv *env) {
+  static _Atomic jclass clazz;
+  jclass cached = atomic_load_explicit(&amp;amp;clazz, memory_order_relaxed);
+  if (__builtin_expect(cached != 0, 1)) return cached;
+  jclass loaded = (*env)-&amp;gt;FindClass(env, &quot;java/lang/Integer&quot;);
+  loaded = (*env)-&amp;gt;NewGlobalRef(env, loaded);
+  if (atomic_compare_exchange_strong_explicit(&amp;amp;clazz, &amp;amp;cached, loaded, memory_order_relaxed, memory_order_relaxed))
+      return loaded;
+  (*env)-&amp;gt;DeleteGlobalRef(env, loaded);
+  return cached;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1&gt;Flow&lt;/h1&gt;
+&lt;p&gt;太复杂了，分析不来&lt;/p&gt;
+&lt;h1&gt;jnic机器码&lt;/h1&gt;
+&lt;p&gt;可以发现jnic的机器码是依据设备的mac地址&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
+public class HWIDGenerator {
+    private static final MessageDigest SHA256;
+    
+    static {
+      try {
+        SHA256 = MessageDigest.getInstance(&quot;SHA-256&quot;);
+      } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    
+    public static byte[] getMachineId() throws Exception {
+      InetAddress localHost = InetAddress.getLocalHost();
+      NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localHost);
+      byte[] macAddress = networkInterface.getHardwareAddress();
+      byte[] machineId = SHA256.digest(macAddress);
+      return machineId;
+    }
+
+    public static void main(String[] args) throws Exception {
+		System.out.println(Base64.getEncoder().encodeToString(getMachineId()));
+	}
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+</content:encoded></item><item><title>HOJ二次开发-扩展功能</title><link>https://blog.cutebaka.cloud/posts/hoj/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/hoj/</guid><description>基于nginx反向代理(应该是只支持单体部署),但是好处就是不用碰Java</description><pubDate>Thu, 05 Feb 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
 &lt;p&gt;::github{repo=&quot;HimitZH/HOJ&quot;}&lt;/p&gt;
 &lt;p&gt;由于学校使用HOJ已经一年了，储存了不少的数据已经换不了hydroOJ了 &lt;s&gt;悲&lt;/s&gt;&lt;/p&gt;
 &lt;p&gt;HOJ项目代码复杂，魔改起来不好魔改，需要给增加一个支持增量获取submission和统一数据也是及其困难&lt;/p&gt;
