@@ -351,21 +351,6 @@ public class HWIDGenerator {
 &lt;li&gt;比赛管理&lt;/li&gt;
 &lt;li&gt;等等&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h1&gt;原理&lt;/h1&gt;
-&lt;p&gt;::github{repo=&quot;richardschneider/express-mung&quot;}&lt;/p&gt;
-&lt;p&gt;我们通过使用 &lt;code&gt;express-mung&lt;/code&gt; , 可以直接得到body, req, res三个参数&lt;/p&gt;
-&lt;p&gt;通过解析 req res，两个参数 对中间件中的数据进行更新&lt;/p&gt;
-&lt;p&gt;例如学生提交了某题的代码，进行评测，我们则通过res可以得到此次评测的结果是否通过.&lt;/p&gt;
-&lt;p&gt;如此我们就可以构造一个符合 &lt;code&gt;ICPCTools&lt;/code&gt; 标准的滚榜数据&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;const mung = require(&apos;express-mung&apos;);
-
-app.use(mung.json(
-  function transform(body, req, res) {
-    // TODO: 妙啊
-    return body;
-  }
-));
-&lt;/code&gt;&lt;/pre&gt;
 &lt;h1&gt;开发中....&lt;/h1&gt;
 &lt;p&gt;阿巴阿巴&lt;/p&gt;
 </content:encoded></item><item><title>Unity3dWeb金课堂的逆向</title><link>https://blog.cutebaka.cloud/posts/jkt/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/jkt/</guid><description>随便弄弄的</description><pubDate>Wed, 04 Feb 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;开端&lt;/h1&gt;

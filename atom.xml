@@ -5,7 +5,7 @@
   <link href="https://blog.cutebaka.cloud/" rel="alternate" type="text/html"/>
   <link href="https://blog.cutebaka.cloud/atom.xml" rel="self" type="application/atom+xml"/>
   <id>https://blog.cutebaka.cloud/</id>
-  <updated>2026-02-18T09:40:22.843Z</updated>
+  <updated>2026-02-19T14:14:58.772Z</updated>
   <language>zh_CN</language>
   <entry>
     <title>jnic转化代码分析</title>
@@ -380,21 +380,6 @@ public class HWIDGenerator {
 <li>比赛管理</li>
 <li>等等</li>
 </ul>
-<h1>原理</h1>
-<p>::github{repo="richardschneider/express-mung"}</p>
-<p>我们通过使用 <code>express-mung</code> , 可以直接得到body, req, res三个参数</p>
-<p>通过解析 req res，两个参数 对中间件中的数据进行更新</p>
-<p>例如学生提交了某题的代码，进行评测，我们则通过res可以得到此次评测的结果是否通过.</p>
-<p>如此我们就可以构造一个符合 <code>ICPCTools</code> 标准的滚榜数据</p>
-<pre><code>const mung = require('express-mung');
-
-app.use(mung.json(
-  function transform(body, req, res) {
-    // TODO: 妙啊
-    return body;
-  }
-));
-</code></pre>
 <h1>开发中....</h1>
 <p>阿巴阿巴</p>
 ]]></content>
