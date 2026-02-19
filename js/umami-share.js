@@ -27,9 +27,6 @@
 		const statsUrl = `${baseUrl}/v1/websites/${websiteId}/stats?startAt=0&endAt=${currentTimestamp}`;
 
 		const res = await fetch(statsUrl, {
-			headers: {
-				"x-umami-api-key": apiKey,
-			},
 		});
 
 		if (!res.ok) {
@@ -68,9 +65,6 @@
 		const statsUrl = `${baseUrl}/v1/websites/${websiteId}/stats?startAt=${startAt}&endAt=${endAt}&path=${encodeURIComponent(urlPath)}`;
 
 		const res = await fetch(statsUrl, {
-			headers: {
-				"x-umami-api-key": apiKey,
-			},
 		});
 
 		if (!res.ok) {
