@@ -5,8 +5,234 @@
   <link href="https://blog.cutebaka.cloud/" rel="alternate" type="text/html"/>
   <link href="https://blog.cutebaka.cloud/atom.xml" rel="self" type="application/atom+xml"/>
   <id>https://blog.cutebaka.cloud/</id>
-  <updated>2026-02-19T14:26:31.137Z</updated>
+  <updated>2026-03-02T15:27:03.538Z</updated>
   <language>zh_CN</language>
+  <entry>
+    <title>board-xcpcio榜单部署</title>
+    <link href="https://blog.cutebaka.cloud/posts/xcpcio/" rel="alternate" type="text/html"/>
+    <id>https://blog.cutebaka.cloud/posts/xcpcio/</id>
+    <published>2026-03-02T00:00:00.000Z</published>
+    <updated>2026-03-02T00:00:00.000Z</updated>
+    <summary>board-xcpcio榜单部署</summary>
+    <content type="html"><![CDATA[<h1>介绍</h1>
+<p>::github{repo="xcpcio/board"}</p>
+<p>最近在为自己学校的比赛部署一个 xcpcio board 以用于保存历史比赛数据，但是目前没看到任何详细的部署文档，只有 hub docker上的 <a href="https://hub.docker.com/r/xcpcio/xcpcio">xcpcio/xcpcio</a> images</p>
+<p>经过 1145秒 阅读dockerfile 后，发现这个images实际上是一个构建镜像，用于将 XCPCIO 源码编译成静态文件，并根据环境变量注入配置</p>
+<p>也就是说我们只需要拉取镜像下来运行一次，获得构建的结果即可，随后通过 <code>nginx</code> 反向代理即可</p>
+<pre><code>/app/xcpcio/packages/apps/board/scripts/../dist/index.html
+/app/xcpcio/packages/apps/board/scripts/../dist/sw.js
+Exported /app/xcpcio/docker/../packages/apps/board/dist to /app/export
+</code></pre>
+<h1>构建</h1>
+<p>我这边由于学校内网结构比较复杂，宿舍网段是 <code>172.17.0.0/16</code>，而docker默认创建的也是<code>172.17.0.0/16</code>，所以就导致出现了宿舍无法访问机房机器</p>
+<h2>docker-compose</h2>
+<p>在某个空白文件夹中创建 <code>docker-compose.yml</code> 文件即可，填入以下内容：</p>
+<pre><code>services:
+  xcpcio-builder:
+    image: xcpcio/xcpcio:0.84.0
+    container_name: xcpcio-builder
+    environment:
+      APP: board
+      BOARD_DATA_HOST: "/data" # 这里
+      BOARD_DATA_REGION: "CN"
+      BOARD_DEFAULT_LANG: "zh"
+      BOARD_REFETCH_INTERVAL: "5000" # 榜单内拉取服务器信息频率(ms毫秒)
+    volumes:
+      - ./export:/app/export
+    command: primary
+</code></pre>
+<p>如果你学校和我一样是 <code>172.17.0.0/16</code> 则使用下面的yml文件</p>
+<pre><code>services:
+  xcpcio-builder:
+    image: xcpcio/xcpcio:0.84.0
+    container_name: xcpcio-builder
+    environment:
+      APP: board
+      BOARD_DATA_HOST: "/data" #
+      BOARD_DATA_REGION: "CN"
+      BOARD_DEFAULT_LANG: "zh"
+      BOARD_REFETCH_INTERVAL: "5000" # 榜单内拉取服务器信息频率(ms毫秒)
+    volumes:
+      - ./export:/app/export
+    networks:
+      xcpcio-net:
+        ipv4_address: 172.29.0.3
+    command: primary
+
+networks:
+  xcpcio-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16
+          gateway: 172.29.0.1
+</code></pre>
+<p>在控制台运行 <code>docker-compose up -d</code> 即可在 <code>docker-compose.yml</code> 同一文件夹下看到 export的文件夹</p>
+<p><img src="https://blog.cutebaka.cloud/_astro/1.DHCYwCY6_Z2dFB3v.webp" alt="" /></p>
+<h2>docker</h2>
+<p>这里如果你是<code>172.17.0.0/16</code>网段，我还是建议你使用 <code>docker-compose.yml</code>的方法</p>
+<pre><code># 创建输出目录
+mkdir -p ./export
+
+# 运行构建
+docker run --rm \
+  -e APP=board \
+  -e BOARD_DATA_HOST="/data" \
+  -e BOARD_DATA_REGION="CN" \
+  -e BOARD_DEFAULT_LANG="zh" \
+  -e BOARD_REFETCH_INTERVAL="5000" \
+  -v $(pwd)/export:/app/export \
+  xcpcio/xcpcio:0.84.0 primary
+
+# 查看生成的文件
+ls -la ./export/
+</code></pre>
+<p>运行结果如图</p>
+<p><img src="https://blog.cutebaka.cloud/_astro/2.CCEAd0WT_Z3OmPO.webp" alt="" /></p>
+<h1>部署上线</h1>
+<p>这里只介绍反向代理怎么写。</p>
+<p>我们使用 <code>nginx</code> 创建一个反向代理，这里的 <code>proxy_pass</code> 指向的是我们校内的数据服务器</p>
+<pre><code>location /data {
+  proxy_pass http://127.0.0.1; 
+  proxy_set_header Host $host; 
+  proxy_set_header X-Real-IP $remote_addr; 
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
+  proxy_set_header REMOTE-HOST $remote_addr; 
+  proxy_set_header Upgrade $http_upgrade; 
+  proxy_set_header Connection $http_connection; 
+  proxy_set_header X-Forwarded-Proto $scheme; 
+  proxy_set_header X-Forwarded-Port $server_port; 
+  proxy_http_version 1.1; 
+  add_header X-Cache $upstream_cache_status; 
+  add_header Cache-Control no-cache; 
+  proxy_ssl_server_name off; 
+  proxy_ssl_name $proxy_host; 
+}
+</code></pre>
+<h1>数据服务器</h1>
+<p>::github{repo="xcpcio/board-data"}</p>
+<p>xcpcio 是通过python自带的http server 来实现的数据服务器。</p>
+<pre><code>python \
+  -m http.server \
+  $@ \
+  8080
+</code></pre>
+<p>我们的自定义数据服务器必须要提供索引文件，服务器的结构如下</p>
+<pre><code>board-data:.
+├─data
+│ └─index
+│   └─contest_list.json
+</code></pre>
+<p>其中 <code>contest_list.json</code> 为索引文件，用于显示主页目录条目的，其中包括每个比赛的数据路径</p>
+<p><img src="https://blog.cutebaka.cloud/_astro/3.Bpue4tZp_1NmuXT.webp" alt="" /></p>
+<p>比赛路径必须是其中之一（你也可以自己去魔改代码）</p>
+<pre><code>const contestTypes = [
+  "camp",
+  "icpc",
+  "ccpc",
+  "provincial-contest",
+];
+
+const isNotFound = !contestTypes.some(c =&gt; route.fullPath.startsWith(`/${c}`));
+</code></pre>
+<h2>contest_list.json格式</h2>
+<p>从代码定义的类型可以知道</p>
+<pre><code>export function createContestIndexList(contestListJSON: any): ContestIndexList {
+  const contestIndexList = [] as ContestIndexList;
+
+  const dfs = (contestList: any) =&gt; {
+    if (Object.prototype.hasOwnProperty.call(contestList, "config")) {
+      contestIndexList.push(createContestIndex(contestList));
+    } else {
+      for (const k in contestList) {
+        dfs(contestList[k]);
+      }
+    }
+  };
+
+  dfs(contestListJSON);
+
+  contestIndexList.sort((a: ContestIndex, b: ContestIndex) =&gt; {
+    if (a.contest.startTime.isBefore(b.contest.startTime)) {
+      return 1;
+    }
+
+    if (a.contest.startTime.isAfter(b.contest.startTime)) {
+      return -1;
+    }
+
+    if (a.contest.endTime.isBefore(b.contest.endTime)) {
+      return 1;
+    }
+
+    if (a.contest.endTime.isAfter(b.contest.endTime)) {
+      return -1;
+    }
+
+    if (a.contest.name &lt; b.contest.name) {
+      return 1;
+    }
+
+    if (a.contest.name &gt; b.contest.name) {
+      return -1;
+    }
+
+    return 0;
+  });
+
+  return contestIndexList;
+}
+</code></pre>
+<p>我们则可以得到一个比较简单的可用配置(实际下面的是复制contest.json里的)</p>
+<pre><code>{
+  "icpc": {
+    "50th": {
+      "xian": {
+        "config": {
+          "contest_name": "第 50 届 ICPC 国际大学生程序设计竞赛西安站",
+          "start_time": 1760835600000,
+          "end_time": 1760853600000,
+          "frozen_time": 3600000,
+          "logo": {
+            "preset": "ICPC"
+          }
+        },
+        "board_link": "/icpc/50th/xian"
+      }
+    },
+  },
+  "ccpc": {
+    "10th": {
+      "zhengzhou": {
+        "config": {
+          "contest_name": "第 11 届 CCPC 中国大学生程序设计竞赛郑州站 - 正式赛",
+          "start_time": 1763859600000,
+          "end_time": 1763877600000,
+          "frozen_time": 3600,
+          "logo": {
+            "preset": "CCPC"
+          }
+        },
+        "board_link": "/ccpc/11th/zhengzhou"
+      }
+    }
+  }
+}
+</code></pre>
+<p>我们可用从json数据得到 <code>board_link</code> ， 这个则是homepage点击跳转的链接，获取对应比赛也会依据这个path获得对应的</p>
+<ul>
+<li>team.json</li>
+<li>run.json</li>
+<li>config.json</li>
+</ul>
+<p>上面的具体格式，docs中亦有记载 <a href="https://xcpcio.com/zh/guide/data-format">link</a></p>
+<p>我们的任务就是将学校oj的数据转化为符合规范的json数据即可。</p>
+]]></content>
+    <author>
+      <name>0x0AB8</name>
+    </author>
+    <category term="XCPC"></category>
+  </entry>
   <entry>
     <title>jnic转化代码分析</title>
     <link href="https://blog.cutebaka.cloud/posts/jnic/" rel="alternate" type="text/html"/>
@@ -803,6 +1029,547 @@ public class HWIDGenerator {
       <name>0x0AB8</name>
     </author>
     <category term="游记"></category>
+  </entry>
+  <entry>
+    <title>前端学习笔记</title>
+    <link href="https://blog.cutebaka.cloud/posts/frontend/" rel="alternate" type="text/html"/>
+    <id>https://blog.cutebaka.cloud/posts/frontend/</id>
+    <published>2025-02-18T00:00:00.000Z</published>
+    <updated>2025-02-18T00:00:00.000Z</updated>
+    <summary></summary>
+    <content type="html"><![CDATA[<h1>block</h1>
+<p><code>div</code> 默认是一个 ```block`` 属性</p>
+<p>block会默认自己占据独立的一行，并会占满父类的整个宽度</p>
+<p>可以设置宽高，内外边距会推开其他元素。</p>
+<p>以下是默认 display: block 属性的元素</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>div</td>
+<td>定义文档中的分区或节，用于组合其他块级元素</td>
+</tr>
+<tr>
+<td>p</td>
+<td>定义段落</td>
+</tr>
+<tr>
+<td>h1-h6</td>
+<td>定义HTML标题，h1最大，h6最小</td>
+</tr>
+<tr>
+<td>blockquote</td>
+<td>定义块引用，通常用于长引用</td>
+</tr>
+<tr>
+<td>pre</td>
+<td>定义预格式文本，保留空格和换行</td>
+</tr>
+<tr>
+<td>ul</td>
+<td>定义无序列表</td>
+</tr>
+<tr>
+<td>ol</td>
+<td>定义有序列表</td>
+</tr>
+<tr>
+<td>form</td>
+<td>定义供用户输入的HTML表单</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>inline</li>
+</ol>
+<p>行内元素，不会独占一行，</p>
+<p>宽高(width&amp;height)设置会忽略，这是因为它的大小是依据内容(content)决定</p>
+<p>内外边距(margin)只会在水平推开别的元素</p>
+<p>这是为您补充的几个HTML标签及其作用：</p>
+<p>以下是默认 display: inline 属性的元素</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>定义超链接，用于从一个页面链接到另一个页面</td>
+</tr>
+<tr>
+<td>span</td>
+<td>定义文档中的行内元素组合，用于对行内元素进行样式设置</td>
+</tr>
+<tr>
+<td>code</td>
+<td>定义计算机代码文本，通常以等宽字体显示</td>
+</tr>
+<tr>
+<td>strong</td>
+<td>定义重要文本，通常以粗体显示</td>
+</tr>
+</tbody>
+</table>
+<h1>inline-block</h1>
+<p>inline-block 是 CSS 中 display 属性的一个值，它结合了行内元素和块级元素的特性。</p>
+<p><code>inline-block</code> 是 CSS 中 <code>display</code> 属性的一个值，它结合了<strong>行内元素</strong>和<strong>块级元素</strong>的特性。</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>同行显示</strong></td>
+<td>像行内元素一样，可以多个元素并排在一行</td>
+</tr>
+<tr>
+<td><strong>可设宽高</strong></td>
+<td>像块级元素一样，可以设置 <code>width</code> 和 <code>height</code></td>
+</tr>
+<tr>
+<td><strong>内外边距</strong></td>
+<td>上下左右的内外边距（<code>margin</code>/<code>padding</code>）都能正常生效</td>
+</tr>
+<tr>
+<td><strong>不强制换行</strong></td>
+<td>不会像块级元素那样在元素前后强制换行</td>
+</tr>
+</tbody>
+</table>
+<pre><code>.element {
+  display: inline-block;
+  width: 150px;      /* 可以设置宽度 */
+  height: 100px;     /* 可以设置高度 */
+  margin: 10px;      /* 四周外边距都生效 */
+  padding: 20px;     /* 四周内边距都生效 */
+}
+</code></pre>
+<h1>flex</h1>
+<p>给父元素，定义属性后，父属性就是一个 <code>flex</code> 容器(flex container)，它的子元素则叫(flex item)</p>
+<p>如下图 <code>main axis</code> 为主轴，而<code>cross axis</code>为交叉轴，默认主轴<code>从左到右</code>，交叉轴<code>从上到下</code></p>
+<p><img src="https://blog.cutebaka.cloud/_astro/1.DT7Cgb-K_O10yM.webp" alt="" /></p>
+<p>容器属性（父元素）</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>常用值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>display</strong></td>
+<td><code>flex</code></td>
+<td>开启弹性布局</td>
+</tr>
+<tr>
+<td><strong>flex-direction</strong></td>
+<td><code>row(默认值)</code> / <code>column</code> / <code>row-reverse(从右到左)</code> / <code>column-reverse(从下到上)</code></td>
+<td>主轴方向（行/列）</td>
+</tr>
+<tr>
+<td><strong>flex-wrap</strong></td>
+<td><code>wrap</code> / <code>nowrap</code></td>
+<td>是否换行</td>
+</tr>
+<tr>
+<td><strong>justify-content</strong></td>
+<td><code>center(主轴居中)</code>/ <code>space-around(间距相同)</code> / <code>space-between(除第1和n元素间距平分)</code> / <code>flex-start(flex起始点)</code> / <code>flex-end(终点)</code> / <code>space-evenly(所有间距相同)</code></td>
+<td>主轴对齐</td>
+</tr>
+<tr>
+<td><strong>align-items</strong></td>
+<td><code>center</code> / <code>stretch</code></td>
+<td>单行交叉轴对齐</td>
+</tr>
+<tr>
+<td><strong>align-content</strong></td>
+<td><code>stretch(默认值)</code> / <code>center</code> / <code>space-evenly</code></td>
+<td>多行交叉轴分布</td>
+</tr>
+</tbody>
+</table>
+<p>项目属性（子元素）</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>常用值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>flex-grow</strong></td>
+<td><code>0</code> / <code>1</code></td>
+<td>剩余空间放大比例</td>
+</tr>
+<tr>
+<td><strong>flex-shrink</strong></td>
+<td><code>1</code> / <code>0</code></td>
+<td>空间不足缩小比例</td>
+</tr>
+<tr>
+<td><strong>flex-basis</strong></td>
+<td><code>auto</code> / <code>100px</code></td>
+<td>项目初始尺寸</td>
+</tr>
+<tr>
+<td><strong>flex</strong></td>
+<td><code>1</code> / <code>none</code></td>
+<td>上面三个的简写</td>
+</tr>
+<tr>
+<td><strong>align-self</strong></td>
+<td><code>center</code> / <code>flex-start</code></td>
+<td>单个项目交叉轴对齐</td>
+</tr>
+<tr>
+<td><strong>order</strong></td>
+<td><code>0</code> / <code>-1</code></td>
+<td>排列顺序（越小越前）</td>
+</tr>
+</tbody>
+</table>
+<h1>grid</h1>
+<h2>父元素</h2>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>常用值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>display</strong></td>
+<td><code>grid</code></td>
+<td>开启网格布局</td>
+</tr>
+<tr>
+<td><strong>grid-template-columns</strong></td>
+<td><code>100px 1fr 2fr</code> / <code>repeat(3, 1fr)</code></td>
+<td>定义列宽</td>
+</tr>
+<tr>
+<td><strong>grid-template-rows</strong></td>
+<td><code>100px auto</code> / <code>repeat(2, 1fr)</code></td>
+<td>定义行高</td>
+</tr>
+<tr>
+<td><strong>gap</strong></td>
+<td><code>10px</code> / <code>20px 10px</code></td>
+<td>行列间距（行 列）</td>
+</tr>
+<tr>
+<td><strong>justify-items</strong></td>
+<td><code>stretch</code> / <code>center</code> / <code>start</code> / <code>end</code></td>
+<td>单元格内水平对齐</td>
+</tr>
+<tr>
+<td><strong>align-items</strong></td>
+<td><code>stretch</code> / <code>center</code> / <code>start</code> / <code>end</code></td>
+<td>单元格内垂直对齐</td>
+</tr>
+<tr>
+<td><strong>place-items</strong></td>
+<td><code>center stretch</code></td>
+<td><code>align-items</code> + <code>justify-items</code> 简写</td>
+</tr>
+<tr>
+<td><strong>justify-content</strong></td>
+<td><code>center</code> / <code>space-between</code></td>
+<td>整个网格水平对齐（容器大时）</td>
+</tr>
+<tr>
+<td><strong>align-content</strong></td>
+<td><code>center</code> / <code>space-around</code></td>
+<td>整个网格垂直对齐（容器大时）</td>
+</tr>
+<tr>
+<td><strong>grid-template-areas</strong></td>
+<td><code>"header header" "sidebar main"</code></td>
+<td>区域命名布局</td>
+</tr>
+</tbody>
+</table>
+<h2>子元素</h2>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>常用值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>grid-column</strong></td>
+<td><code>1 / 3</code> / <code>1 / span 2</code></td>
+<td>跨列（起始/结束）</td>
+</tr>
+<tr>
+<td><strong>grid-row</strong></td>
+<td><code>1 / 3</code> / <code>1 / span 2</code></td>
+<td>跨行（起始/结束）</td>
+</tr>
+<tr>
+<td><strong>grid-area</strong></td>
+<td><code>header</code> / <code>1 / 1 / 3 / 3</code></td>
+<td>放入命名区域 或 指定位置</td>
+</tr>
+<tr>
+<td><strong>justify-self</strong></td>
+<td><code>center</code> / <code>stretch</code> / <code>start</code> / <code>end</code></td>
+<td>单个项目水平对齐</td>
+</tr>
+<tr>
+<td><strong>align-self</strong></td>
+<td><code>center</code> / <code>stretch</code> / <code>start</code> / <code>end</code></td>
+<td>单个项目垂直对齐</td>
+</tr>
+<tr>
+<td><strong>place-self</strong></td>
+<td><code>center stretch</code></td>
+<td><code>align-self</code> + <code>justify-self</code> 简写</td>
+</tr>
+</tbody>
+</table>
+<h2>Flex vs Grid 快速选择</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一维布局（行或列）</td>
+<td><strong>Flex</strong></td>
+</tr>
+<tr>
+<td>二维布局（行列都有）</td>
+<td><strong>Grid</strong></td>
+</tr>
+<tr>
+<td>内容驱动（大小不确定）</td>
+<td><strong>Flex</strong></td>
+</tr>
+<tr>
+<td>布局驱动（先画格子）</td>
+<td><strong>Grid</strong></td>
+</tr>
+<tr>
+<td>导航栏/菜单</td>
+<td>Flex</td>
+</tr>
+<tr>
+<td>整体页面框架</td>
+<td>Grid</td>
+</tr>
+</tbody>
+</table>
+<h1>CSS 定位</h1>
+<h2>position 属性</h2>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>特点</th>
+<th>参考系</th>
+<th>是否脱离文档流</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>static</strong></td>
+<td>默认值，正常文档流</td>
+<td>无</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>relative</strong></td>
+<td>相对自身原位置偏移</td>
+<td>元素原本位置</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>absolute</strong></td>
+<td>绝对定位</td>
+<td>最近的非static祖先</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>fixed</strong></td>
+<td>固定定位</td>
+<td>视口（viewport）</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>sticky</strong></td>
+<td>粘性定位</td>
+<td>父容器 + 视口</td>
+<td>特殊</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>偏移属性</h2>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>作用</th>
+<th>常用值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>top</strong></td>
+<td>距离参考系上边界</td>
+<td><code>0</code> / <code>10px</code> / <code>20%</code></td>
+</tr>
+<tr>
+<td><strong>right</strong></td>
+<td>距离参考系右边界</td>
+<td><code>0</code> / <code>10px</code> / <code>20%</code></td>
+</tr>
+<tr>
+<td><strong>bottom</strong></td>
+<td>距离参考系下边界</td>
+<td><code>0</code> / <code>10px</code> / <code>20%</code></td>
+</tr>
+<tr>
+<td><strong>left</strong></td>
+<td>距离参考系左边界</td>
+<td><code>0</code> / <code>10px</code> / <code>20%</code></td>
+</tr>
+<tr>
+<td><strong>z-index</strong></td>
+<td>层叠顺序（数值越大越靠上）</td>
+<td><code>1</code> / <code>999</code> / <code>-1</code></td>
+</tr>
+</tbody>
+</table>
+<h3>1. relative（相对定位）</h3>
+<pre><code>.box {
+  position: relative;
+  top: 10px;
+  left: 20px;
+}
+</code></pre>
+<h3>2. absolute（绝对定位）</h3>
+<p>把container当成参考系</p>
+<pre><code>.container {
+  position: relative;
+}
+.child {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+</code></pre>
+<h3>3. fixed（固定定位）</h3>
+<p>滚动页面时始终可见</p>
+<pre><code>.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+</code></pre>
+<h3>4. sticky（粘性定位）</h3>
+<p>滚动到顶部时固定</p>
+<pre><code>.section-title {
+  position: sticky;
+  top: 0;
+}
+</code></pre>
+<h2>注意事项</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>z-index生效条件</strong></td>
+<td>仅对非static定位元素有效</td>
+</tr>
+<tr>
+<td><strong>absolute参考系</strong></td>
+<td>若祖先全static，参考根元素(html)</td>
+</tr>
+<tr>
+<td><strong>sticky限制</strong></td>
+<td>父容器不能有overflow:hidden</td>
+</tr>
+<tr>
+<td><strong>fixed移动端</strong></td>
+<td>在iOS下可能有兼容性问题</td>
+</tr>
+</tbody>
+</table>
+<h1>em和rem</h1>
+<p>em，rem是允许浏览器控制字体大小的单位, px会写死</p>
+<h2>em</h2>
+<p>用在font-size时，相对于自己的父元素计算大小</p>
+<h2>rem</h2>
+<p>相对于根元素计算大小</p>
+<h2>分辨</h2>
+<ul>
+<li>
+<p>用em定义组件内部元素间相互关联的尺寸。比如组件内标题比例，
+与字体联动的内边距，图标大小等。谨慎在font-size上使用em。</p>
+</li>
+<li>
+<p>用rem定义与根元素相关的全局尺寸。比如正文基础字号，布局间
+距，模块尺寸等。</p>
+</li>
+<li>
+<p>用px定义不应随任何因素缩放的固定尺寸。比如边框宽度，阴影偏
+移，固定大小的媒体元素等。</p>
+</li>
+</ul>
+<h1>css重置</h1>
+<pre><code>html {
+  box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  margin: 0;
+}
+</code></pre>
+<h1>盒子尺寸控制</h1>
+<pre><code>box-sizing: content-box;
+/* content-box为默认值， 它的计算方式为: border+padding+width/height */
+box-sizing: border-box;
+/*  border-box则是 width和height定义从边框border开始计算 */
+/* 其中的 content大小会依据 padding border 自动向内收缩计算 */
+</code></pre>
+]]></content>
+    <author>
+      <name>0x0AB8</name>
+    </author>
+    <category term="前端"></category>
   </entry>
   <entry>
     <title>如何在windows使用frida</title>

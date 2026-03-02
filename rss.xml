@@ -1,4 +1,217 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>snowflake的博客</title><description>baka</description><link>https://blog.cutebaka.cloud/</link><language>zh_CN</language><item><title>jnic转化代码分析</title><link>https://blog.cutebaka.cloud/posts/jnic/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/jnic/</guid><pubDate>Wed, 18 Feb 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>snowflake的博客</title><description>baka</description><link>https://blog.cutebaka.cloud/</link><language>zh_CN</language><item><title>board-xcpcio榜单部署</title><link>https://blog.cutebaka.cloud/posts/xcpcio/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/xcpcio/</guid><description>board-xcpcio榜单部署</description><pubDate>Mon, 02 Mar 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
+&lt;p&gt;::github{repo=&quot;xcpcio/board&quot;}&lt;/p&gt;
+&lt;p&gt;最近在为自己学校的比赛部署一个 xcpcio board 以用于保存历史比赛数据，但是目前没看到任何详细的部署文档，只有 hub docker上的 &lt;a href=&quot;https://hub.docker.com/r/xcpcio/xcpcio&quot;&gt;xcpcio/xcpcio&lt;/a&gt; images&lt;/p&gt;
+&lt;p&gt;经过 1145秒 阅读dockerfile 后，发现这个images实际上是一个构建镜像，用于将 XCPCIO 源码编译成静态文件，并根据环境变量注入配置&lt;/p&gt;
+&lt;p&gt;也就是说我们只需要拉取镜像下来运行一次，获得构建的结果即可，随后通过 &lt;code&gt;nginx&lt;/code&gt; 反向代理即可&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/app/xcpcio/packages/apps/board/scripts/../dist/index.html
+/app/xcpcio/packages/apps/board/scripts/../dist/sw.js
+Exported /app/xcpcio/docker/../packages/apps/board/dist to /app/export
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1&gt;构建&lt;/h1&gt;
+&lt;p&gt;我这边由于学校内网结构比较复杂，宿舍网段是 &lt;code&gt;172.17.0.0/16&lt;/code&gt;，而docker默认创建的也是&lt;code&gt;172.17.0.0/16&lt;/code&gt;，所以就导致出现了宿舍无法访问机房机器&lt;/p&gt;
+&lt;h2&gt;docker-compose&lt;/h2&gt;
+&lt;p&gt;在某个空白文件夹中创建 &lt;code&gt;docker-compose.yml&lt;/code&gt; 文件即可，填入以下内容：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;services:
+  xcpcio-builder:
+    image: xcpcio/xcpcio:0.84.0
+    container_name: xcpcio-builder
+    environment:
+      APP: board
+      BOARD_DATA_HOST: &quot;/data&quot; # 这里
+      BOARD_DATA_REGION: &quot;CN&quot;
+      BOARD_DEFAULT_LANG: &quot;zh&quot;
+      BOARD_REFETCH_INTERVAL: &quot;5000&quot; # 榜单内拉取服务器信息频率(ms毫秒)
+    volumes:
+      - ./export:/app/export
+    command: primary
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果你学校和我一样是 &lt;code&gt;172.17.0.0/16&lt;/code&gt; 则使用下面的yml文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;services:
+  xcpcio-builder:
+    image: xcpcio/xcpcio:0.84.0
+    container_name: xcpcio-builder
+    environment:
+      APP: board
+      BOARD_DATA_HOST: &quot;/data&quot; #
+      BOARD_DATA_REGION: &quot;CN&quot;
+      BOARD_DEFAULT_LANG: &quot;zh&quot;
+      BOARD_REFETCH_INTERVAL: &quot;5000&quot; # 榜单内拉取服务器信息频率(ms毫秒)
+    volumes:
+      - ./export:/app/export
+    networks:
+      xcpcio-net:
+        ipv4_address: 172.29.0.3
+    command: primary
+
+networks:
+  xcpcio-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16
+          gateway: 172.29.0.1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;在控制台运行 &lt;code&gt;docker-compose up -d&lt;/code&gt; 即可在 &lt;code&gt;docker-compose.yml&lt;/code&gt; 同一文件夹下看到 export的文件夹&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/1.DHCYwCY6_Z2dFB3v.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h2&gt;docker&lt;/h2&gt;
+&lt;p&gt;这里如果你是&lt;code&gt;172.17.0.0/16&lt;/code&gt;网段，我还是建议你使用 &lt;code&gt;docker-compose.yml&lt;/code&gt;的方法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# 创建输出目录
+mkdir -p ./export
+
+# 运行构建
+docker run --rm \
+  -e APP=board \
+  -e BOARD_DATA_HOST=&quot;/data&quot; \
+  -e BOARD_DATA_REGION=&quot;CN&quot; \
+  -e BOARD_DEFAULT_LANG=&quot;zh&quot; \
+  -e BOARD_REFETCH_INTERVAL=&quot;5000&quot; \
+  -v $(pwd)/export:/app/export \
+  xcpcio/xcpcio:0.84.0 primary
+
+# 查看生成的文件
+ls -la ./export/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;运行结果如图&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/2.CCEAd0WT_Z3OmPO.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h1&gt;部署上线&lt;/h1&gt;
+&lt;p&gt;这里只介绍反向代理怎么写。&lt;/p&gt;
+&lt;p&gt;我们使用 &lt;code&gt;nginx&lt;/code&gt; 创建一个反向代理，这里的 &lt;code&gt;proxy_pass&lt;/code&gt; 指向的是我们校内的数据服务器&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;location /data {
+  proxy_pass http://127.0.0.1; 
+  proxy_set_header Host $host; 
+  proxy_set_header X-Real-IP $remote_addr; 
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
+  proxy_set_header REMOTE-HOST $remote_addr; 
+  proxy_set_header Upgrade $http_upgrade; 
+  proxy_set_header Connection $http_connection; 
+  proxy_set_header X-Forwarded-Proto $scheme; 
+  proxy_set_header X-Forwarded-Port $server_port; 
+  proxy_http_version 1.1; 
+  add_header X-Cache $upstream_cache_status; 
+  add_header Cache-Control no-cache; 
+  proxy_ssl_server_name off; 
+  proxy_ssl_name $proxy_host; 
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1&gt;数据服务器&lt;/h1&gt;
+&lt;p&gt;::github{repo=&quot;xcpcio/board-data&quot;}&lt;/p&gt;
+&lt;p&gt;xcpcio 是通过python自带的http server 来实现的数据服务器。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;python \
+  -m http.server \
+  $@ \
+  8080
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;我们的自定义数据服务器必须要提供索引文件，服务器的结构如下&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;board-data:.
+├─data
+│ └─index
+│   └─contest_list.json
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;其中 &lt;code&gt;contest_list.json&lt;/code&gt; 为索引文件，用于显示主页目录条目的，其中包括每个比赛的数据路径&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/3.Bpue4tZp_1NmuXT.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;比赛路径必须是其中之一（你也可以自己去魔改代码）&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const contestTypes = [
+  &quot;camp&quot;,
+  &quot;icpc&quot;,
+  &quot;ccpc&quot;,
+  &quot;provincial-contest&quot;,
+];
+
+const isNotFound = !contestTypes.some(c =&amp;gt; route.fullPath.startsWith(`/${c}`));
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;contest_list.json格式&lt;/h2&gt;
+&lt;p&gt;从代码定义的类型可以知道&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;export function createContestIndexList(contestListJSON: any): ContestIndexList {
+  const contestIndexList = [] as ContestIndexList;
+
+  const dfs = (contestList: any) =&amp;gt; {
+    if (Object.prototype.hasOwnProperty.call(contestList, &quot;config&quot;)) {
+      contestIndexList.push(createContestIndex(contestList));
+    } else {
+      for (const k in contestList) {
+        dfs(contestList[k]);
+      }
+    }
+  };
+
+  dfs(contestListJSON);
+
+  contestIndexList.sort((a: ContestIndex, b: ContestIndex) =&amp;gt; {
+    if (a.contest.startTime.isBefore(b.contest.startTime)) {
+      return 1;
+    }
+
+    if (a.contest.startTime.isAfter(b.contest.startTime)) {
+      return -1;
+    }
+
+    if (a.contest.endTime.isBefore(b.contest.endTime)) {
+      return 1;
+    }
+
+    if (a.contest.endTime.isAfter(b.contest.endTime)) {
+      return -1;
+    }
+
+    if (a.contest.name &amp;lt; b.contest.name) {
+      return 1;
+    }
+
+    if (a.contest.name &amp;gt; b.contest.name) {
+      return -1;
+    }
+
+    return 0;
+  });
+
+  return contestIndexList;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;我们则可以得到一个比较简单的可用配置(实际下面的是复制contest.json里的)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{
+  &quot;icpc&quot;: {
+    &quot;50th&quot;: {
+      &quot;xian&quot;: {
+        &quot;config&quot;: {
+          &quot;contest_name&quot;: &quot;第 50 届 ICPC 国际大学生程序设计竞赛西安站&quot;,
+          &quot;start_time&quot;: 1760835600000,
+          &quot;end_time&quot;: 1760853600000,
+          &quot;frozen_time&quot;: 3600000,
+          &quot;logo&quot;: {
+            &quot;preset&quot;: &quot;ICPC&quot;
+          }
+        },
+        &quot;board_link&quot;: &quot;/icpc/50th/xian&quot;
+      }
+    },
+  },
+  &quot;ccpc&quot;: {
+    &quot;10th&quot;: {
+      &quot;zhengzhou&quot;: {
+        &quot;config&quot;: {
+          &quot;contest_name&quot;: &quot;第 11 届 CCPC 中国大学生程序设计竞赛郑州站 - 正式赛&quot;,
+          &quot;start_time&quot;: 1763859600000,
+          &quot;end_time&quot;: 1763877600000,
+          &quot;frozen_time&quot;: 3600,
+          &quot;logo&quot;: {
+            &quot;preset&quot;: &quot;CCPC&quot;
+          }
+        },
+        &quot;board_link&quot;: &quot;/ccpc/11th/zhengzhou&quot;
+      }
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;我们可用从json数据得到 &lt;code&gt;board_link&lt;/code&gt; ， 这个则是homepage点击跳转的链接，获取对应比赛也会依据这个path获得对应的&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;team.json&lt;/li&gt;
+&lt;li&gt;run.json&lt;/li&gt;
+&lt;li&gt;config.json&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;上面的具体格式，docs中亦有记载 &lt;a href=&quot;https://xcpcio.com/zh/guide/data-format&quot;&gt;link&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;我们的任务就是将学校oj的数据转化为符合规范的json数据即可。&lt;/p&gt;
+</content:encoded></item><item><title>jnic转化代码分析</title><link>https://blog.cutebaka.cloud/posts/jnic/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/jnic/</guid><pubDate>Wed, 18 Feb 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
 &lt;p&gt;:::note
 曾经也是jnic正版用户，但是由于jnic的更新太慢了，150英镑的昂贵价格让人望而却步。
 jnic还有授权次数限制，次数限制一旦没有就无法再次授权新设备。
@@ -743,6 +956,534 @@ public class HWIDGenerator {
 &lt;p&gt;后续看来，原来后面一直排在铜牌区啊，感觉这也算是没白来吧哎。。。。。&lt;/p&gt;
 &lt;p&gt;这次强度因为和网络赛撞车了，强度应该算是低了很多啊，估计下一届的强度还是非常高的。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/39.Cr5JXwlU_Z1moDk5.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+</content:encoded></item><item><title>前端学习笔记</title><link>https://blog.cutebaka.cloud/posts/frontend/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/frontend/</guid><pubDate>Tue, 18 Feb 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;block&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;div&lt;/code&gt; 默认是一个 ```block`` 属性&lt;/p&gt;
+&lt;p&gt;block会默认自己占据独立的一行，并会占满父类的整个宽度&lt;/p&gt;
+&lt;p&gt;可以设置宽高，内外边距会推开其他元素。&lt;/p&gt;
+&lt;p&gt;以下是默认 display: block 属性的元素&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;div&lt;/td&gt;
+&lt;td&gt;定义文档中的分区或节，用于组合其他块级元素&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;p&lt;/td&gt;
+&lt;td&gt;定义段落&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;h1-h6&lt;/td&gt;
+&lt;td&gt;定义HTML标题，h1最大，h6最小&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;blockquote&lt;/td&gt;
+&lt;td&gt;定义块引用，通常用于长引用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;pre&lt;/td&gt;
+&lt;td&gt;定义预格式文本，保留空格和换行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ul&lt;/td&gt;
+&lt;td&gt;定义无序列表&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ol&lt;/td&gt;
+&lt;td&gt;定义有序列表&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;form&lt;/td&gt;
+&lt;td&gt;定义供用户输入的HTML表单&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ol&gt;
+&lt;li&gt;inline&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;行内元素，不会独占一行，&lt;/p&gt;
+&lt;p&gt;宽高(width&amp;amp;height)设置会忽略，这是因为它的大小是依据内容(content)决定&lt;/p&gt;
+&lt;p&gt;内外边距(margin)只会在水平推开别的元素&lt;/p&gt;
+&lt;p&gt;这是为您补充的几个HTML标签及其作用：&lt;/p&gt;
+&lt;p&gt;以下是默认 display: inline 属性的元素&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;a&lt;/td&gt;
+&lt;td&gt;定义超链接，用于从一个页面链接到另一个页面&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;span&lt;/td&gt;
+&lt;td&gt;定义文档中的行内元素组合，用于对行内元素进行样式设置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;code&lt;/td&gt;
+&lt;td&gt;定义计算机代码文本，通常以等宽字体显示&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;strong&lt;/td&gt;
+&lt;td&gt;定义重要文本，通常以粗体显示&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1&gt;inline-block&lt;/h1&gt;
+&lt;p&gt;inline-block 是 CSS 中 display 属性的一个值，它结合了行内元素和块级元素的特性。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;inline-block&lt;/code&gt; 是 CSS 中 &lt;code&gt;display&lt;/code&gt; 属性的一个值，它结合了&lt;strong&gt;行内元素&lt;/strong&gt;和&lt;strong&gt;块级元素&lt;/strong&gt;的特性。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;特性&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;同行显示&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;像行内元素一样，可以多个元素并排在一行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;可设宽高&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;像块级元素一样，可以设置 &lt;code&gt;width&lt;/code&gt; 和 &lt;code&gt;height&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;内外边距&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;上下左右的内外边距（&lt;code&gt;margin&lt;/code&gt;/&lt;code&gt;padding&lt;/code&gt;）都能正常生效&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;不强制换行&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;不会像块级元素那样在元素前后强制换行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre&gt;&lt;code&gt;.element {
+  display: inline-block;
+  width: 150px;      /* 可以设置宽度 */
+  height: 100px;     /* 可以设置高度 */
+  margin: 10px;      /* 四周外边距都生效 */
+  padding: 20px;     /* 四周内边距都生效 */
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1&gt;flex&lt;/h1&gt;
+&lt;p&gt;给父元素，定义属性后，父属性就是一个 &lt;code&gt;flex&lt;/code&gt; 容器(flex container)，它的子元素则叫(flex item)&lt;/p&gt;
+&lt;p&gt;如下图 &lt;code&gt;main axis&lt;/code&gt; 为主轴，而&lt;code&gt;cross axis&lt;/code&gt;为交叉轴，默认主轴&lt;code&gt;从左到右&lt;/code&gt;，交叉轴&lt;code&gt;从上到下&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/1.DT7Cgb-K_O10yM.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;容器属性（父元素）&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;属性&lt;/th&gt;
+&lt;th&gt;常用值&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;display&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;flex&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;开启弹性布局&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;flex-direction&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;row(默认值)&lt;/code&gt; / &lt;code&gt;column&lt;/code&gt; / &lt;code&gt;row-reverse(从右到左)&lt;/code&gt; / &lt;code&gt;column-reverse(从下到上)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;主轴方向（行/列）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;flex-wrap&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;wrap&lt;/code&gt; / &lt;code&gt;nowrap&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;是否换行&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;justify-content&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center(主轴居中)&lt;/code&gt;/ &lt;code&gt;space-around(间距相同)&lt;/code&gt; / &lt;code&gt;space-between(除第1和n元素间距平分)&lt;/code&gt; / &lt;code&gt;flex-start(flex起始点)&lt;/code&gt; / &lt;code&gt;flex-end(终点)&lt;/code&gt; / &lt;code&gt;space-evenly(所有间距相同)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;主轴对齐&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;align-items&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center&lt;/code&gt; / &lt;code&gt;stretch&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;单行交叉轴对齐&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;align-content&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;stretch(默认值)&lt;/code&gt; / &lt;code&gt;center&lt;/code&gt; / &lt;code&gt;space-evenly&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;多行交叉轴分布&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;项目属性（子元素）&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;属性&lt;/th&gt;
+&lt;th&gt;常用值&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;flex-grow&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0&lt;/code&gt; / &lt;code&gt;1&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;剩余空间放大比例&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;flex-shrink&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;1&lt;/code&gt; / &lt;code&gt;0&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;空间不足缩小比例&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;flex-basis&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;auto&lt;/code&gt; / &lt;code&gt;100px&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;项目初始尺寸&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;flex&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;1&lt;/code&gt; / &lt;code&gt;none&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;上面三个的简写&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;align-self&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center&lt;/code&gt; / &lt;code&gt;flex-start&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;单个项目交叉轴对齐&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;order&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0&lt;/code&gt; / &lt;code&gt;-1&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;排列顺序（越小越前）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1&gt;grid&lt;/h1&gt;
+&lt;h2&gt;父元素&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;属性&lt;/th&gt;
+&lt;th&gt;常用值&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;display&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;grid&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;开启网格布局&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;grid-template-columns&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;100px 1fr 2fr&lt;/code&gt; / &lt;code&gt;repeat(3, 1fr)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;定义列宽&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;grid-template-rows&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;100px auto&lt;/code&gt; / &lt;code&gt;repeat(2, 1fr)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;定义行高&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;gap&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;10px&lt;/code&gt; / &lt;code&gt;20px 10px&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;行列间距（行 列）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;justify-items&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;stretch&lt;/code&gt; / &lt;code&gt;center&lt;/code&gt; / &lt;code&gt;start&lt;/code&gt; / &lt;code&gt;end&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;单元格内水平对齐&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;align-items&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;stretch&lt;/code&gt; / &lt;code&gt;center&lt;/code&gt; / &lt;code&gt;start&lt;/code&gt; / &lt;code&gt;end&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;单元格内垂直对齐&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;place-items&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center stretch&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;align-items&lt;/code&gt; + &lt;code&gt;justify-items&lt;/code&gt; 简写&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;justify-content&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center&lt;/code&gt; / &lt;code&gt;space-between&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;整个网格水平对齐（容器大时）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;align-content&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center&lt;/code&gt; / &lt;code&gt;space-around&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;整个网格垂直对齐（容器大时）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;grid-template-areas&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&quot;header header&quot; &quot;sidebar main&quot;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;区域命名布局&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;子元素&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;属性&lt;/th&gt;
+&lt;th&gt;常用值&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;grid-column&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;1 / 3&lt;/code&gt; / &lt;code&gt;1 / span 2&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;跨列（起始/结束）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;grid-row&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;1 / 3&lt;/code&gt; / &lt;code&gt;1 / span 2&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;跨行（起始/结束）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;grid-area&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;header&lt;/code&gt; / &lt;code&gt;1 / 1 / 3 / 3&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;放入命名区域 或 指定位置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;justify-self&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center&lt;/code&gt; / &lt;code&gt;stretch&lt;/code&gt; / &lt;code&gt;start&lt;/code&gt; / &lt;code&gt;end&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;单个项目水平对齐&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;align-self&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center&lt;/code&gt; / &lt;code&gt;stretch&lt;/code&gt; / &lt;code&gt;start&lt;/code&gt; / &lt;code&gt;end&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;单个项目垂直对齐&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;place-self&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;center stretch&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;align-self&lt;/code&gt; + &lt;code&gt;justify-self&lt;/code&gt; 简写&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;Flex vs Grid 快速选择&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;场景&lt;/th&gt;
+&lt;th&gt;推荐&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;一维布局（行或列）&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Flex&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;二维布局（行列都有）&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Grid&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;内容驱动（大小不确定）&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Flex&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;布局驱动（先画格子）&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Grid&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;导航栏/菜单&lt;/td&gt;
+&lt;td&gt;Flex&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;整体页面框架&lt;/td&gt;
+&lt;td&gt;Grid&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1&gt;CSS 定位&lt;/h1&gt;
+&lt;h2&gt;position 属性&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;值&lt;/th&gt;
+&lt;th&gt;特点&lt;/th&gt;
+&lt;th&gt;参考系&lt;/th&gt;
+&lt;th&gt;是否脱离文档流&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;static&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;默认值，正常文档流&lt;/td&gt;
+&lt;td&gt;无&lt;/td&gt;
+&lt;td&gt;❌&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;relative&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;相对自身原位置偏移&lt;/td&gt;
+&lt;td&gt;元素原本位置&lt;/td&gt;
+&lt;td&gt;❌&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;absolute&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;绝对定位&lt;/td&gt;
+&lt;td&gt;最近的非static祖先&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;fixed&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;固定定位&lt;/td&gt;
+&lt;td&gt;视口（viewport）&lt;/td&gt;
+&lt;td&gt;✅&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;sticky&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;粘性定位&lt;/td&gt;
+&lt;td&gt;父容器 + 视口&lt;/td&gt;
+&lt;td&gt;特殊&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr /&gt;
+&lt;h2&gt;偏移属性&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;属性&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;th&gt;常用值&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;top&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;距离参考系上边界&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0&lt;/code&gt; / &lt;code&gt;10px&lt;/code&gt; / &lt;code&gt;20%&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;right&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;距离参考系右边界&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0&lt;/code&gt; / &lt;code&gt;10px&lt;/code&gt; / &lt;code&gt;20%&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;bottom&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;距离参考系下边界&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0&lt;/code&gt; / &lt;code&gt;10px&lt;/code&gt; / &lt;code&gt;20%&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;left&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;距离参考系左边界&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0&lt;/code&gt; / &lt;code&gt;10px&lt;/code&gt; / &lt;code&gt;20%&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;z-index&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;层叠顺序（数值越大越靠上）&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;1&lt;/code&gt; / &lt;code&gt;999&lt;/code&gt; / &lt;code&gt;-1&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3&gt;1. relative（相对定位）&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;.box {
+  position: relative;
+  top: 10px;
+  left: 20px;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;2. absolute（绝对定位）&lt;/h3&gt;
+&lt;p&gt;把container当成参考系&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.container {
+  position: relative;
+}
+.child {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;3. fixed（固定定位）&lt;/h3&gt;
+&lt;p&gt;滚动页面时始终可见&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;4. sticky（粘性定位）&lt;/h3&gt;
+&lt;p&gt;滚动到顶部时固定&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.section-title {
+  position: sticky;
+  top: 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;注意事项&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;场景&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;z-index生效条件&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;仅对非static定位元素有效&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;absolute参考系&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;若祖先全static，参考根元素(html)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;sticky限制&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;父容器不能有overflow:hidden&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;fixed移动端&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;在iOS下可能有兼容性问题&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1&gt;em和rem&lt;/h1&gt;
+&lt;p&gt;em，rem是允许浏览器控制字体大小的单位, px会写死&lt;/p&gt;
+&lt;h2&gt;em&lt;/h2&gt;
+&lt;p&gt;用在font-size时，相对于自己的父元素计算大小&lt;/p&gt;
+&lt;h2&gt;rem&lt;/h2&gt;
+&lt;p&gt;相对于根元素计算大小&lt;/p&gt;
+&lt;h2&gt;分辨&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;用em定义组件内部元素间相互关联的尺寸。比如组件内标题比例，
+与字体联动的内边距，图标大小等。谨慎在font-size上使用em。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;用rem定义与根元素相关的全局尺寸。比如正文基础字号，布局间
+距，模块尺寸等。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;用px定义不应随任何因素缩放的固定尺寸。比如边框宽度，阴影偏
+移，固定大小的媒体元素等。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;css重置&lt;/h1&gt;
+&lt;pre&gt;&lt;code&gt;html {
+  box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  margin: 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1&gt;盒子尺寸控制&lt;/h1&gt;
+&lt;pre&gt;&lt;code&gt;box-sizing: content-box;
+/* content-box为默认值， 它的计算方式为: border+padding+width/height */
+box-sizing: border-box;
+/*  border-box则是 width和height定义从边框border开始计算 */
+/* 其中的 content大小会依据 padding border 自动向内收缩计算 */
+&lt;/code&gt;&lt;/pre&gt;
 </content:encoded></item><item><title>如何在windows使用frida</title><link>https://blog.cutebaka.cloud/posts/fridahotspot/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/fridahotspot/</guid><pubDate>Mon, 17 Feb 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
 &lt;p&gt;firda一个在Android逆向十分常用的 native 层动态调试的工具。&lt;/p&gt;
 &lt;p&gt;但是它有没有办法在windows的hotspot使用。 根据我目前找到关于jvm hotspot的frida文章,提问等都无法使用&lt;/p&gt;
