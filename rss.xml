@@ -1,4 +1,202 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>snowflake的博客</title><description>baka</description><link>https://blog.cutebaka.cloud/</link><language>zh_CN</language><item><title>board-xcpcio榜单部署</title><link>https://blog.cutebaka.cloud/posts/xcpcio/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/xcpcio/</guid><description>board-xcpcio榜单部署</description><pubDate>Mon, 02 Mar 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>snowflake的博客</title><description>baka</description><link>https://blog.cutebaka.cloud/</link><language>zh_CN</language><item><title>Mimo-code反向代理</title><link>https://blog.cutebaka.cloud/posts/mimo/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/mimo/</guid><description>神秘玩意</description><pubDate>Thu, 11 Jun 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;前言&lt;/h1&gt;
+&lt;p&gt;可用版本：&lt;/p&gt;
+&lt;p&gt;::github{repo=&quot;snowf14k3/mimo-free-proxy&quot;}&lt;/p&gt;
+&lt;p&gt;曾经通过opencode的免费模型，将opencode中的免费模型 apikey给分离出来，拿去作为 沉浸式翻译 插件的AI接口翻译使用&lt;/p&gt;
+&lt;p&gt;最近看到mimo-code也发布了，非常有意思的一点是，mimocode是基于opencode来开发的，&lt;/p&gt;
+&lt;p&gt;通过阅读源码，我们发现mimocode的免费大模型试用，是通过plugin的方式加载到 mimocode中的&lt;/p&gt;
+&lt;p&gt;所以我们翻阅代码可以发现与opencode的不同之处在于，body需要指定一个客户端指纹&lt;/p&gt;
+&lt;p&gt;具体流程如下&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;flowchart TD
+    A[生成设备指纹] --&amp;gt; B[SHA256 hostname+platform+arch+cpu+username]
+    B --&amp;gt; C[持久化到文件]
+    C --&amp;gt; D[Bootstrap 请求]
+    D --&amp;gt; E[POST /api/free-ai/bootstrap]
+    E --&amp;gt; F[body: client=fingerprint]
+    F --&amp;gt; G[获取 JWT]
+    G --&amp;gt; H[缓存 JWT]
+    H --&amp;gt; I{JWT 过期?}
+    I --&amp;gt;|否| J[发送 Chat 请求]
+    I --&amp;gt;|是| D
+    J --&amp;gt; K[POST /api/free-ai/openai/chat]
+    K --&amp;gt; L[Header: Authorization: Bearer jwt]
+    L --&amp;gt; M{响应状态}
+    M --&amp;gt;|200| N[返回结果]
+    M --&amp;gt;|401/403| O[清除缓存]
+    O --&amp;gt; D
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;通过上面流程，我们就可以通过代码编写一个反代。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;设计&lt;/h1&gt;
+&lt;p&gt;我们使用 cloudflare worker来编写，经过本地测试，用于翻译会出现 429 响应代码，所以会有一个并发限制。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;flowchart TD
+    A[收到请求] --&amp;gt; B[从池中随机获取 JWT]
+    B --&amp;gt; C{JWT 有效?}
+    C --&amp;gt;|是| D[发送请求到 MiMo API]
+    C --&amp;gt;|否| B
+    D --&amp;gt; E{响应状态}
+    E --&amp;gt;|200| F[返回结果]
+    E --&amp;gt;|401/403| G[移除无效 JWT]
+    G --&amp;gt; H[获取新 JWT]
+    H --&amp;gt; D
+    E --&amp;gt;|429| I[标记 JWT 冷却 3s]
+    I --&amp;gt; J[等待递增延迟]
+    J --&amp;gt; B
+    E --&amp;gt;|超时| K[重试]
+    K --&amp;gt; B
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;当前版本似乎有一个神秘的问题，导致KV频繁读写。&lt;/p&gt;
+&lt;p&gt;不过这些都是得后续优化了。&lt;/p&gt;
+</content:encoded></item><item><title>XCPC-2026-游寄</title><link>https://blog.cutebaka.cloud/posts/xcpc2026/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/xcpc2026/</guid><description>最后的一年</description><pubDate>Tue, 12 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;抢名额路上&lt;/h1&gt;
+&lt;h2&gt;3.3 ICPC深圳邀请赛&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/1.CV6hfYbX_1PKCR7.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;看到深圳邀请函的时候打算去报名，可惜学校强制参加蓝桥杯，故4月11日只能被迫去参加蓝桥杯，与深圳名额失之交臂啊（&lt;/p&gt;
+&lt;h2&gt;4.2 ICPC武汉邀请赛&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/2.z2n330_f_1OoByk.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;慢3s out！，武汉的名额太少了，笨比没抢到。&lt;/p&gt;
+&lt;h1&gt;4.4 CCPC南昌邀请赛&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/4.CE0nK-SD_hS0lS.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;点击就送啊！非常好的的比赛&lt;/p&gt;
+&lt;h2&gt;5.12 ICPC南昌邀请赛&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/3.CSPn1j2J_ARUz5.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;JXNU的雷霆报名系统，之前抢武汉还是深圳的名额,ICPC GLOBAL 也是不出意外的爆炸了，不过他这个报名没褒姒是好的。&lt;/p&gt;
+&lt;h2&gt;最后我们抢到了&lt;/h2&gt;
+&lt;p&gt;CC广西，CC贵州，CC南昌，IC南昌&lt;/p&gt;
+&lt;p&gt;通过我的神秘操作，从学校那边拉来了 4000 多的资金赞助！！其中2000用于住宿，剩余用于报名费。&lt;/p&gt;
+&lt;h1&gt;IC南昌&lt;/h1&gt;
+&lt;p&gt;由于去年已经去了一次南昌，不知道有什么景点玩的了。大多数时间都在酒店摸鱼。&lt;/p&gt;
+&lt;p&gt;花费700+在JXNU周围订了个一般般的民宿酒店，体验还是不错的，空调也非常凉爽。&lt;/p&gt;
+&lt;h2&gt;5.16 热身赛&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/5.DCjZNuch_Z1NtO1V.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;这个路牌不错，比参赛队牌好看几百倍了。是不是可以 &lt;s&gt;把这个薅回学校&lt;/s&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/6.Bt2-QOwT_1CH3BF.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;为什么会放一个鼎在这，是有什么神秘意义吗（&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/7.C2ChgseT_Z1clpVL.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;这个校徽牌为什么没有二次元校徽/(ㄒoㄒ)/~~，这次没带有baka和koishi 非常遗憾&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/8.DE6sgrd9_FOscw.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;去到食堂吃了一餐午餐，感觉吃什么都是辣的，非常辣，我甚至还看到了加辣的奶茶。&lt;/p&gt;
+&lt;p&gt;JXNU除了参赛牌难看，似乎还真没什么可以挑剔的了，热身赛的系统用的是icpc专用的linux魔改版&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/9.v6RuKKSi_ZcQf9P.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;伴手礼非常喜欢，我直接把我现在的包丢了（因为他破了个洞，除此之外，为什么衣服没有icpc的标。&lt;/p&gt;
+&lt;p&gt;而是只剩下&quot;ICPC JXNU&quot;，这是全部赛站里最简洁的衣服了，不过相对于后续的雷霆CC贵州马楼衣服好几百倍（&lt;/p&gt;
+&lt;h2&gt;5.17 正赛&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A 题直接秒杀，还好队友提醒了一下 $m$ 和 $n$ 的输入是反的，要不然就 WA了，&lt;s&gt;据说还是ljx出的最简单的签到题&lt;/s&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;B 题 一顿瞎搞，队友尝试了3次就过了的签到题，比较雷霆&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;H 题 弱智小游戏环节，一开始推论只推有1和2的情况，没继续往后推，最后是由队友推出后面的结论，然后直接过了&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;I 题 神秘二维DP，不会直接交给队友了&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;午餐不错，只不过凉了。&lt;/p&gt;
+&lt;p&gt;后面都卡在B题怎么做&lt;/p&gt;
+&lt;p&gt;由于太菜了，不会启发式合并，直接倒闭了，最后只通过了4题，结束本赛。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;人还是很多的&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/10.DrNKFNop_uy3rG.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;总体上来说题目都基本可做，可最后歪榜了。比较雷霆说是，&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/11.BOk_9ja1_2eiusP.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;最后也是正常发挥，打铜了。至少经费没白花&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/12.C2y52n___ZCFFOD.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;下面是和我的koishi合影&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/13.Dg1H_i8A_Z2ab5Xz.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;一个fun fact：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;JXNU最好的地方就是，饭票可以在水吧直接换水，于是我们就整了一箱的水，喝饱了说是&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/14.aWd_t-b3_Z1LBvv8.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h2&gt;最后&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/16.D3yL1jy5_YYOkN.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;体验还是不错的，只是后续能不能把队牌优化下，看上去非常神人，黑字红底背景&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/15.BV3PSufX_Z26I1xK.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;后续我们在jxnu附近的商场吃了一次自助，吃的最有性价比的一次自助啊！&lt;/p&gt;
+&lt;p&gt;这次可能是最后一次来南昌了，赛后到CC南昌中间这一段时间我们住在南昌5天多&lt;/p&gt;
+&lt;p&gt;我们还去逛了江西省博，博物馆还是非常大的，第一次逛这种这么大的馆&lt;/p&gt;
+&lt;h1&gt;江西省博&lt;/h1&gt;
+&lt;h2&gt;正门&lt;/h2&gt;
+&lt;p&gt;天气还不错，体感也不错&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/17.CnJG-unO_nBXW1.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;由于正面的牌有人挡住了，就懒得去牌正面的牌子了。&lt;/p&gt;
+&lt;h2&gt;好看的&lt;/h2&gt;
+&lt;p&gt;去的时候把全部开的馆子都看了一遍，感觉还是很不错的啊啊啊&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/18.g7Zkk-Rp_Z1XCkYP.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/19.v8jH2JSF_ZXtg06.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;随手拍的，差点分不清楚正反了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/23.BXKjZ4Nb_ZEvMBJ.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h2&gt;KFC&lt;/h2&gt;
+&lt;p&gt;感谢 比尔盖茨 对本次游记的支持！ 赞助了我100块钱吃KFC&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/22.4l1-g6Nn_1gmT9L.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h1&gt;CC南昌&lt;/h1&gt;
+&lt;p&gt;重回NCU，第一次吃NCU的食堂，没想到这么难吃。。。&lt;/p&gt;
+&lt;h2&gt;5.23 热身赛&lt;/h2&gt;
+&lt;p&gt;出现了神秘的问题，我们参赛座位上电脑的账号登为别的队伍的账号。没怎么拍什么照片。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/21.D03MH5vV_CdduY.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;这次我带上了koishi，怎么技术组还夹带私货啊（这种我最喜欢了&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/20.Bsy_F12M_Z2gDoej.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;热身赛除了，账号登录成别人学校的队伍就没啥问题了，体验不错，南昌CC举办还真是标杆啊。&lt;/p&gt;
+&lt;p&gt;伴手礼我感觉一般般，送了一个冰箱贴和一个钥匙扣，我觉得还是非常不错的。衣服和JXNU的类似，&lt;/p&gt;
+&lt;p&gt;但是面料更加好，穿上非常舒服的啊！&lt;/p&gt;
+&lt;p&gt;哎，似乎没拍伴手礼的照片：（偷点群友的）&lt;/p&gt;
+&lt;h2&gt;5.24 正赛&lt;/h2&gt;
+&lt;p&gt;忘记题目是什么了，不写了（&lt;/p&gt;
+&lt;p&gt;偷懒&lt;/p&gt;
+&lt;p&gt;总计是继续打铜，牌子变小了，&lt;/p&gt;
+&lt;h2&gt;赛后&lt;/h2&gt;
+&lt;p&gt;去吃饭了，好难吃啊，这个肉烂烂的&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/24.BI0mkxtb_Z1Dni6B.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;滚榜环节：&lt;/p&gt;
+&lt;p&gt;jxt好美丽（&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/26.DceU-fmU_Z1ridsE.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;依旧铜奖&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/25.Drt_17yR_1wWwVo.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;滚完后，发现外面还下起来了暴雨，非常坏的啊&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/27.5m5yeuzv_1zohK7.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h1&gt;CC广西&lt;/h1&gt;
+&lt;p&gt;懒得写了，野完了&lt;/p&gt;
+&lt;h1&gt;CC贵州&lt;/h1&gt;
+&lt;p&gt;体验非常垃圾，和前面的南昌拉了几百倍，只不过伴手礼不错，&lt;/p&gt;
+&lt;p&gt;送的是一个杯子和一个没啥用的颈椎按摩的玩意（这破东西还会漏电电人。&lt;/p&gt;
+&lt;p&gt;还有一点就是，衣服正面很好看（有马楼，其实也一般），背后的字太多了，非常难看，搞的我都不敢穿出去了&lt;/p&gt;
+&lt;h2&gt;黔灵山公园&lt;/h2&gt;
+&lt;p&gt;坏事： 我买的可乐被马楼抢了，&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/36.CADYHtcj_LwQ3A.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;不知道叫什么的马楼&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/37.DOtIlTm3_Z4FjBc.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h2&gt;赛场&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/29.naAZiks1_1TW0NF.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;伴手礼如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/30.HgrNrQF3_Z1iDTdf.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/32.B58SCDl8_lUhpa.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/31.BJf7fX3f_1GjPck.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h2&gt;饮食&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;食堂的粉：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/28.D5JPa33t_ZYT5X8.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;只花了7.5元，非常好吃。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;点的外卖 荷叶鸡，吃了两个晚上 还不错：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/35.DOJiV4G6_Z405uJ.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;热身赛后的午餐不错，吃的是学校职工自助食堂&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;大伙都在疯狂攻击食堂的西瓜。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/34.8_2Dle2E_HaMme.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;h1&gt;终结&lt;/h1&gt;
+&lt;p&gt;不知道写什么了，那就写 《ACM是一场骗局！》 吧，我也是菜的不行了。。&lt;/p&gt;
+&lt;p&gt;就这样吧，XCPC这下是全部结束了&lt;/p&gt;
+</content:encoded></item><item><title>board-xcpcio榜单部署</title><link>https://blog.cutebaka.cloud/posts/xcpcio/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/xcpcio/</guid><description>board-xcpcio榜单部署</description><pubDate>Mon, 02 Mar 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;介绍&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;后记，实际上你也可以通过直接clone项目，然后通过魔改 &lt;code&gt;packages/apps/board/index.html&lt;/code&gt; 中的script块中的host写死，也不一定需要通过docker拉去镜像指定编译
+实际上本镜像是通过 sed 替换DATA HOST 等变量信息的构建前端的镜像&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;::github{repo=&quot;xcpcio/board&quot;}&lt;/p&gt;
 &lt;p&gt;最近在为自己学校的比赛部署一个 xcpcio board 以用于保存历史比赛数据，但是目前没看到任何详细的部署文档，只有 hub docker上的 &lt;a href=&quot;https://hub.docker.com/r/xcpcio/xcpcio&quot;&gt;xcpcio/xcpcio&lt;/a&gt; images&lt;/p&gt;
 &lt;p&gt;经过 1145秒 阅读dockerfile 后，发现这个images实际上是一个构建镜像，用于将 XCPCIO 源码编译成静态文件，并根据环境变量注入配置&lt;/p&gt;
@@ -956,7 +1154,7 @@ public class HWIDGenerator {
 &lt;p&gt;后续看来，原来后面一直排在铜牌区啊，感觉这也算是没白来吧哎。。。。。&lt;/p&gt;
 &lt;p&gt;这次强度因为和网络赛撞车了，强度应该算是低了很多啊，估计下一届的强度还是非常高的。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://blog.cutebaka.cloud/_astro/39.Cr5JXwlU_Z1moDk5.webp&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-</content:encoded></item><item><title>前端学习笔记</title><link>https://blog.cutebaka.cloud/posts/frontend/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/frontend/</guid><pubDate>Tue, 18 Feb 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;block&lt;/h1&gt;
+</content:encoded></item><item><title>前端学习笔记</title><link>https://blog.cutebaka.cloud/posts/frontend/</link><guid isPermaLink="true">https://blog.cutebaka.cloud/posts/frontend/</guid><description>真的还有必要学这个吗?</description><pubDate>Tue, 18 Feb 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;block&lt;/h1&gt;
 &lt;p&gt;&lt;code&gt;div&lt;/code&gt; 默认是一个 ```block`` 属性&lt;/p&gt;
 &lt;p&gt;block会默认自己占据独立的一行，并会占满父类的整个宽度&lt;/p&gt;
 &lt;p&gt;可以设置宽高，内外边距会推开其他元素。&lt;/p&gt;
